@@ -1,4 +1,3 @@
-import React from 'react';
 import './App.css';
 
 // Reaproveitamento de estrutura;
@@ -7,12 +6,22 @@ import { Outlet } from 'react-router';
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
+      <header>
         <p>
-          Edit <code>src/App.tsx</code> and save to reload.
+          Header
         </p>
-        <Outlet />
       </header>
+      <aside>
+        <p>
+          Aside
+        </p>
+      </aside>
+      <Outlet />
+      <footer>
+        <p>
+          Footer
+        </p>
+      </footer>
     </div>
   );
 }
