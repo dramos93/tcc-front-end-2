@@ -1,16 +1,14 @@
+import { Link } from 'react-router-dom';
 import './App.css';
 
 // Reaproveitamento de estrutura;
 import { Outlet } from 'react-router';
+import Navbar from './pages/navbar';
 
 function App() {
   return (
     <div className="App">
-      <header>
-        <p>
-          Header
-        </p>
-      </header>
+      <Navbar />
       <aside>
         <p>
           Aside
