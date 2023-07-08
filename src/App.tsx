@@ -3,24 +3,21 @@ import './App.css';
 
 // Reaproveitamento de estrutura;
 import { Outlet } from 'react-router';
-import Navbar from './pages/navbar';
+import MenuAppBar from './pages/menuAppBar';
+import MenuDrawer from './pages/menuDrawer';
+import { Box, Toolbar } from '@mui/material';
+
 
 function App() {
   return (
-    <div className="App">
-      <Navbar />
-      <aside>
-        <p>
-          Aside
-        </p>
-      </aside>
-      <Outlet />
-      <footer>
-        <p>
-          Footer
-        </p>
-      </footer>
-    </div>
+    <>
+      <MenuAppBar />
+      <MenuDrawer />
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Toolbar />
+        <Outlet />
+      </Box>
+    </>
   );
 }
 
