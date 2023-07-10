@@ -11,57 +11,38 @@ import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 
-import {
-    Link as RouterLink,
-    Route,
-    Routes,
-    MemoryRouter,
-    useLocation,
-    Link,
-} from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 
 export default function MenuDrawer() {
-    const [selectedIndex, setSelectedIndex] = React.useState(1);
-    const handleListItemClick = (
-        event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-        index: number,
-    ) => {
-        setSelectedIndex(index);
-    };
+    const { pathname } = useLocation();
 
     return (
         <Drawer
             variant="permanent"
             sx={{
                 width: drawerWidth,
-                flexShrink: 0,
-                [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+                flexShrink: 1,
             }}
+            open={true}
         >
             <Toolbar />
-            <Box sx={{ overflow: 'auto' }}>
+            <Box component="nav" sx={{ overflow: 'auto' }}>
                 <List>
                     {[{ page: 'Página Inicial', link: '/' }, { page: 'Usuários', link: '/users' }].map((text, index) => (
                         <ListItem
                             key={text.page}
                             disablePadding
-
-                            component={RouterLink as any}
-                            to={text.link}
                         >
                             <ListItemButton
-                                selected={selectedIndex === 0}
-                                onClick={(event) => handleListItemClick(event, 0)}>
+                                selected={text.link === pathname}
+                                component={React.forwardRef((props, ref) => <Link {...props} to={text.link} />)
+                                }>
                                 <ListItemIcon>
                                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                                 </ListItemIcon>
-                                {/* <Link to={text.link}>
-                                    {text.page} */}
                                 <ListItemText primary={text.page} />
-                                {/* </Link> */}
-
                             </ListItemButton>
                         </ListItem>
                     ))}
