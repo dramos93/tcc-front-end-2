@@ -1,7 +1,9 @@
+import { Outlet } from "react-router-dom"
+
 const LoginLayout = () => {
-
-
-    return <h1>Login</h1>
+    return <div>
+        <Outlet />
+    </div>
 }
 
 export default LoginLayout
