@@ -12,11 +12,13 @@ import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 
 import { useLocation, Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 const drawerWidth = 240;
 
 export default function MenuDrawer() {
     const { pathname } = useLocation();
+    const { logout } = useAuth();
 
     return (
         <Drawer
@@ -51,7 +53,7 @@ export default function MenuDrawer() {
                 <List>
                     {['SAIR'].map((text, index) => (
                         <ListItem key={text} disablePadding>
-                            <ListItemButton>
+                            <ListItemButton onClick={logout}>
                                 <ListItemIcon>
                                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                                 </ListItemIcon>

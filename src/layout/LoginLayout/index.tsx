@@ -1,9 +1,8 @@
 import { Outlet } from "react-router-dom"
 
 const LoginLayout = () => {
-    return <div>
-        <Outlet />
-    </div>
+    return <Outlet />
+
 }
 
 export default LoginLayout
