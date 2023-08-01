@@ -14,7 +14,7 @@ const Login = () => {
         });
 
     }
-    
+
     return (
         <>
             <CssBaseline />
@@ -25,7 +25,7 @@ const Login = () => {
                     justifyContent="center"
                     sx={{ height: "100vh" }}
                 >
-                    <Paper elevation={12}>
+                    <Paper elevation={6}>
                         <Grid
                             container
                             direction="column"
