@@ -4,9 +4,7 @@ import { Box, Stack, TextField, InputAdornment, IconButton, Button, Grid, Paper,
 
 const Login = () => {
     const [word, setWord] = React.useState('')
-
     const { login } = useAuth();
-
 
     const handleClick = () => {
         login({
@@ -16,6 +14,7 @@ const Login = () => {
         });
 
     }
+    
     return (
         <>
             <CssBaseline />
