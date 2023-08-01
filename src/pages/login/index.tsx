@@ -3,12 +3,12 @@ import { useAuth } from "../../hooks/useAuth";
 import { Box, Stack, TextField, InputAdornment, IconButton, Button, Grid, Paper, Container, CssBaseline } from "@mui/material";
 
 const Login = () => {
-    const [word, setWord] = React.useState('')
+    const [user, setUser] = React.useState('')
     const { login } = useAuth();
 
     const handleClick = () => {
         login({
-            email: word,
+            email: user,
             id: 0,
             name: ""
         });
@@ -34,7 +34,7 @@ const Login = () => {
                                 minHeight: '250px',
                                 width: 400,
                             }}>
-                            <TextField name="user" label="Usuário" />
+                            <TextField name="user" label="Usuário" onChange={x => setUser(x.target.value)} />
                             <TextField name="password" label="Senha"
                             // type={showPassword ? 'text' : 'password'}
                             // InputProps={{
