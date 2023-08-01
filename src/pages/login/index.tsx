@@ -12,7 +12,6 @@ const Login = () => {
             id: 0,
             name: ""
         });
-
     }
 
     return (
