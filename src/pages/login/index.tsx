@@ -1,10 +1,13 @@
 import React from "react"
 import { useAuth } from "../../hooks/useAuth";
-import { Box, Stack, TextField, InputAdornment, IconButton, Button, Grid, Paper, Container, CssBaseline } from "@mui/material";
+import { TextField, InputAdornment, IconButton, Button, Grid, Paper, Container, CssBaseline } from "@mui/material";
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const Login = () => {
     const [user, setUser] = React.useState('')
     const { login } = useAuth();
+    const [showPassword, setShowPassword] = React.useState(true)
 
     const handleClick = () => {
         login({
@@ -31,22 +34,32 @@ const Login = () => {
                             justifyContent="space-evenly"
                             alignItems="center"
                             sx={{
-                                minHeight: '250px',
+                                minHeight: 250,
                                 width: 400,
                             }}>
-                            <TextField name="user" label="Usuário" onChange={x => setUser(x.target.value)} />
-                            <TextField name="password" label="Senha"
-                            // type={showPassword ? 'text' : 'password'}
-                            // InputProps={{
-                            //     endAdornment: (
-                            //         <InputAdornment position="end">
-                            //             <IconButton onClick={() => alert('Hello!')} edge="end">
-                            //                 <Iconify icon={true ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-                            //             </IconButton>
-                            //         </InputAdornment>
-                            //     ),
-                            // }}
-                            />
+                            <Grid container
+                                direction="column"
+                                justifyContent="space-between"
+                                alignItems="center"
+                                sx={{
+                                    minHeight: 100,
+                                    width: 250,
+                                }}>
+
+                                <TextField name="user" label="Usuário" size='small' onChange={x => setUser(x.target.value)} fullWidth />
+                                <TextField name="password" label="Senha" size='small' fullWidth
+                                    type={showPassword ? 'text' : 'password'}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton onClick={() => setShowPassword(p => !p)} edge="end" >
+                                                    {!showPassword ? <VisibilityIcon fontSize="small" /> : <VisibilityOffIcon />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
                             <Button size="large" type="submit" variant="contained" onClick={handleClick}>
                                 Login
                             </Button>
