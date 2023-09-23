@@ -1,20 +1,32 @@
 import React from "react"
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth, User, TypeUser } from "../../hooks/useAuth";
 import { TextField, InputAdornment, IconButton, Button, Grid, Paper, Container, CssBaseline } from "@mui/material";
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const Login = () => {
-    const [user, setUser] = React.useState('')
+    const [username, setUsername] = React.useState('')
     const { login } = useAuth();
     const [showPassword, setShowPassword] = React.useState(false)
 
     const handleClick = () => {
-        login({
-            email: user,
-            id: 0,
-            name: ""
-        });
+
+        //Fazer autenticação na API
+        function authAPI(): User {
+            return {
+                username: username,
+                email: "",
+                id: 1,
+                name: "",
+                token: "",
+                type: TypeUser.student,
+            }
+        }
+
+        const returnUserAPI = authAPI()
+
+        //Aqui guarda as informações que vem da API.
+        login(returnUserAPI);
     }
 
     return (
@@ -46,7 +58,7 @@ const Login = () => {
                                     width: 250,
                                 }}>
 
-                                <TextField name="user" label="Usuário" size='small' onChange={x => setUser(x.target.value)} fullWidth />
+                                <TextField name="user" label="Usuário" size='small' onChange={x => setUsername(x.target.value)} fullWidth />
                                 <TextField name="password" label="Senha" size='small' fullWidth
                                     type={showPassword ? 'text' : 'password'}
                                     InputProps={{
@@ -63,6 +75,7 @@ const Login = () => {
                             <Button size="large" type="submit" variant="contained" onClick={handleClick}>
                                 Login
                             </Button>
+                            <input>{ }</input>
                         </Grid>
                     </Paper>
                 </Grid>

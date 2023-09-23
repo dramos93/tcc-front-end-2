@@ -6,7 +6,12 @@ interface Props {
     children?: React.ReactNode;
 }
 
-interface User {
+export enum TypeUser {
+    'admin' = 1,
+    'student' = 2
+}
+
+export interface User {
     // Define a estrutura do objeto de usuário
     // com base nos dados que serão armazenados
     // em localStorage
@@ -14,6 +19,9 @@ interface User {
     id: number;
     name: string;
     email: string;
+    type: TypeUser;
+    username: string;
+    token: string;
 }
 
 interface AuthContextType {
