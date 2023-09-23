@@ -7,7 +7,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 const Login = () => {
     const [user, setUser] = React.useState('')
     const { login } = useAuth();
-    const [showPassword, setShowPassword] = React.useState(true)
+    const [showPassword, setShowPassword] = React.useState(false)
 
     const handleClick = () => {
         login({
