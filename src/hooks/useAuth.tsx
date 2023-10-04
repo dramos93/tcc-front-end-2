@@ -1,9 +1,13 @@
-import { createContext, useContext, useMemo } from "react";
+import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalStorage } from "./useLocalStorage";
 
-interface Props {
-    children?: React.ReactNode;
+export interface UserToken {
+    token?: string;
+}
+
+interface PropsAuthProvider {
+    children: React.ReactNode; // Ou o tipo apropriado para as crianças (children) do componente.
 }
 
 export enum TypeUser {
@@ -19,32 +23,46 @@ export interface User {
     id: number;
     name: string;
     email: string;
-    type: TypeUser;
+    role: TypeUser;
     username: string;
-    token: string;
 }
 
 interface AuthContextType {
-    user: User | null;
-    login: (data: User) => void;
+    user: User;
+    login: (data: UserToken) => void;
     logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: Props) => {
-    const [user, setUser] = useLocalStorage("user", null);
+export const AuthProvider = ({ children }: PropsAuthProvider) => {
+    const [userToken, setUserToken] = useLocalStorage("user_token", "");
+    const getDataFromUser = (userToken: UserToken): User => {
+        console.log(`Com o token ${userToken.token} pega os dados do usuário`);
+        return {
+            username: "Daniel",
+            email: "daniel.silvaramos.93@gmail.com",
+            id: 1,
+            name: "Daniel",
+            role: TypeUser.admin,
+        };
+    };
+    const [user, setUser] = useState(getDataFromUser(userToken));
     const navigate = useNavigate();
 
-    const login = async (data: any) => {
-        setUser(data);
-        navigate("/", { replace: true });
-    };
 
-    const logout = () => {
-        setUser(null);
+    const login = useCallback((data: UserToken) => {
+        console.log(data);
+        setUserToken(data.token);
+        setUser(getDataFromUser(userToken));
+        navigate("/", { replace: true });
+    }, [userToken, setUserToken, setUser, navigate]);
+
+    const logout = useCallback(() => {
+        setUserToken("");
+        setUser({} as User);
         navigate("/login", { replace: true });
-    };
+    }, [setUserToken, setUser, navigate]);
 
     const value = useMemo(
         () => ({
@@ -52,7 +70,7 @@ export const AuthProvider = ({ children }: Props) => {
             login,
             logout
         }),
-        [user]
+        [user, login, logout]
     );
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

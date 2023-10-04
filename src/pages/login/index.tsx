@@ -1,29 +1,31 @@
 import React from "react"
-import { useAuth, User, TypeUser } from "../../hooks/useAuth";
+import { useAuth, UserToken } from "../../hooks/useAuth";
 import { TextField, InputAdornment, IconButton, Button, Grid, Paper, Container, CssBaseline } from "@mui/material";
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const Login = () => {
     const [username, setUsername] = React.useState('')
+    const [password, setPassword] = React.useState('')
     const { login } = useAuth();
     const [showPassword, setShowPassword] = React.useState(false)
 
     const handleClick = () => {
 
         //Fazer autenticação na API
-        function authAPI(): User {
+        function authAPI(username: string, password: string): UserToken {
+
+            // faz a requisição de login, retornando o token.
+            console.log(`Fez a requisição. Usuário: ${username} e senha: ${password}`)
+
             return {
-                username: username,
-                email: "",
-                id: 1,
-                name: "",
-                token: "",
-                type: TypeUser.student,
+                token: "123456"
             }
         }
 
-        const returnUserAPI = authAPI()
+
+
+        const returnUserAPI = authAPI(username, password)
 
         //Aqui guarda as informações que vem da API.
         login(returnUserAPI);
@@ -60,6 +62,7 @@ const Login = () => {
 
                                 <TextField name="user" label="Usuário" size='small' onChange={x => setUsername(x.target.value)} fullWidth />
                                 <TextField name="password" label="Senha" size='small' fullWidth
+                                    onChange={e => setPassword(e.target.value)}
                                     type={showPassword ? 'text' : 'password'}
                                     InputProps={{
                                         endAdornment: (
