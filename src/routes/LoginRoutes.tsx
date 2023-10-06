@@ -1,3 +1,4 @@
+import React from 'react';
 import LoginLayout from "../layout/LoginLayout"
 import Login from "../pages/login"
 
