@@ -250,7 +250,37 @@ export default function Dashboard() {
                     </div>
                 </Grid>
                 <Grid container item xs={8} style={s} >
-                    <h1>AQUIIIIIIII</h1>
+                    <Chart options={{
+                        labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+                        chart: {
+                            type: 'polarArea',
+                        },
+                        stroke: {
+                            colors: ['#fff']
+                        },
+                        fill: {
+                            opacity: 0.8
+                        },
+                        legend: { position: 'left' },
+                        title: {
+                            text: "Título",
+                            align: "center"
+                        },
+                        responsive: [{
+                            breakpoint: 480,
+                            options: {
+                                chart: {
+                                    width: 200
+                                },
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }]
+                    }}
+                        series={[10, 23, 30, 41, 59, 60, 71, 89, 90, 108]}
+                        type="polarArea"
+                        width="600" />
                 </Grid>
             </Grid>
 
