@@ -178,7 +178,7 @@ export default function Dashboard() {
                             }
                             type="bar"
                             height="100%"
-                            style={{ backgroundColor: '#fafafa' }}
+                            // style={{ backgroundColor: '#fafafa' }}
                         />
                     </Card>
                 </Grid>
@@ -251,7 +251,7 @@ export default function Dashboard() {
                             type="polarArea"
                             // width="100%"
                             height="100%"
-                            style={{ backgroundColor: '#fafafa' }}
+                            // style={{ backgroundColor: '#fafafa' }}
                         />
                     </Card>
                 </Grid>
