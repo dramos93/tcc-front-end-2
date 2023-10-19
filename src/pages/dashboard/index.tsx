@@ -1,5 +1,6 @@
-import { Card, CardContent, Checkbox, FormControl, Grid, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent, Typography } from '@mui/material';
-import { GridColDef, GridColumnHeaderParams, GridRowHeightParams, GridRowsProp } from '@mui/x-data-grid';
+import { InputOutlined, InputSharp } from '@mui/icons-material';
+import { Card, CardContent, Checkbox, FormControl, Grid, InputAdornment, InputBase, InputLabel, ListItemText, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
+import { GridColDef, GridColumnHeaderParams, GridRowsProp } from '@mui/x-data-grid';
 import { DataGrid } from '@mui/x-data-grid/DataGrid';
 import React from 'react';
 import Chart from "react-apexcharts";
@@ -7,8 +8,6 @@ import Chart from "react-apexcharts";
 const classes: string[] = ["2º Ano - Matutino", "2º Ano - Vespertino"];
 const students: string[] = ["Daniel", "Abigail", "Catarina"];
 const rounds: number[] = [1, 2, 3, 4, 5];
-
-
 
 const rows: GridRowsProp = [
     { id: 1, table: 1, errors: 10, },
@@ -62,17 +61,15 @@ export default function Dashboard() {
 
     return (
         <Grid container>
-            <Grid container >
+            <Grid container>
                 <Grid
                     container
                     xs={4}
                     item
                     direction="column"
                     justifyContent="space-around"
-                    alignItems="flex-end"
-                    style={s}
                 >
-                    <FormControl >
+                    <FormControl>
                         <InputLabel>Turma</InputLabel>
                         <Select
                             // labelId="demo-simple-select-label"
@@ -81,7 +78,6 @@ export default function Dashboard() {
                             label="Turma"
                             onChange={handleChangeClasses}
                             // fullWidth
-                            style={{ width: 400 }}
                             name='Name'
                             placeholder='Da'
 
@@ -92,7 +88,7 @@ export default function Dashboard() {
                             ))}
                         </Select>
                     </FormControl>
-                    <FormControl>
+                    <FormControl >
                         <InputLabel>Alunos</InputLabel>
                         <Select
                             // id="demo-multiple-checkbox"
@@ -101,9 +97,8 @@ export default function Dashboard() {
                             onChange={handleChangeStudents}
                             renderValue={(selected) => selected.join(', ')}
                             multiple
-                            // input={<OutlinedInput label="Tag" />}
-                            // fullWidth
-                            style={{ width: 400 }}
+                        // input={<OutlinedInput label="Tag" />}
+                        // fullWidth
                         // MenuProps={MenuProps} //Aqui vai os props de largura, etc.
                         >
                             {students.map((student) => (
@@ -123,98 +118,69 @@ export default function Dashboard() {
                             label="Rodadas"
                             onChange={handleChangeRound}
                             multiple
-                            // input={<OutlinedInput label="Tag" />}
-                            // fullWidth
-                            style={{ width: 400 }}
+                        // input={<OutlinedInput label="Tag" />}
+                        // fullWidth
                         >
                             {rounds.map(c => (
                                 <MenuItem key={c} value={c}>{c}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
-                    <Card style={{ width: 400, height: 80, }}>
-                        <CardContent style={{ padding: 8, textAlign: 'center' }}>
-                            <InputLabel sx={{ fontSize: 12, }} >
-                                MÉDIA DE ERROS POR RODADA
-                            </InputLabel>
-                            <Typography sx={{ fontSize: 36 }}>
-                                14
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                    <Card style={{ width: 400, height: 80 }} >
-                        <CardContent style={{ padding: 8, textAlign: 'center' }}>
-                            <InputLabel sx={{ fontSize: 12 }} >
-                                RODADAS COMPLETAS
-                            </InputLabel>
-                            <Typography sx={{ fontSize: 36 }}>
-                                14
-                            </Typography>
-                        </CardContent>
-                    </Card>
+                    <FormControl>
+                        <Card>
+                            <CardContent style={{ padding: 6 }}>
+                                <Typography variant="subtitle2" textAlign='center'>
+                                    MÉDIA DE ERROS POR RODADA
+                                </Typography>
+                                <Typography variant='h3' textAlign='center'>
+                                    14
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </FormControl>
+                    <FormControl>
+                        <Card>
+                            <CardContent style={{ padding: 6 }}>
+                                <Typography variant="subtitle2" textAlign='center'>
+                                    RODADAS COMPLETAS
+                                </Typography>
+                                <Typography variant='h3' textAlign='center'>
+                                    16
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </FormControl>
                 </Grid>
                 <Grid container item xs={8} style={s}>
-                    {/* Possível biblioteca para usar nos gráficos: https://formidable.com/open-source/victory/guides/events#external-event-mutations
-                    <VictoryChart width={600}  domain={{ x: [0, 5] }}
-                        // externalEventMutations={this.state.externalMutations}
-                        events={[
-                            {
-                                target: "data",
-                                childName: "Bar-2",
-                                eventHandlers: {
-                                    onClick: (e) => {
-                                        // console.log(e);
-                                        return (
-                                            {
-                                                target: "data",
-                                                mutation: () => ({ style: { fill: "orange" } })
-                                            });
+                    <Card style={{ width: "100%", height: "100%" }}>
+                        <Chart
+                            options={{
+                                chart: {
+                                    id: "basic-bar"
+                                },
+                                xaxis: {
+                                    categories: [1, 2, 3, 4, 5, 6, 7, 8],
+                                    title: {
+                                        text: 'Rodada'
+                                    }
+                                },
+                                yaxis: {
+                                    title: {
+                                        text: 'Quantidade de Erros'
                                     }
                                 }
+                            }}
+                            series={
+                                [{
+                                    name: "series-1",
+                                    data: [57, 56, 54, 50, 49, 60, 49, 41]
+                                }]
                             }
-                        ]}
-                    >
-                        <VictoryBar name="Bar-2"
-                            style={{ data: { fill: "grey" } }}
-                            labels={(e) => console.log(e)}
-                            width={50}
-                            // theme={function a(x){return x}}
-                            data={[
-                                { x: 1, y: 5 },
-                                { x: 2, y: 4 },
-                                { x: 3, y: 3 },
-                                { x: 4, y: 2 }
-                            ]}
+                            type="bar"
+                            height="100%"
+                            style={{ backgroundColor: '#fafafa' }}
                         />
-                    </VictoryChart> */}
-                    <Chart
-                        options={{
-                            chart: {
-                                id: "basic-bar"
-                            },
-                            xaxis: {
-                                categories: [1, 2, 3, 4, 5, 6, 7, 8],
-                                title: {
-                                    text: 'Rodada'
-                                }
-                            },
-                            yaxis: {
-                                title: {
-                                    text: 'Quantidade de Erros'
-                                }
-                            }
-                        }}
-                        series={
-                            [{
-                                name: "series-1",
-                                data: [57, 56, 54, 50, 49, 60, 49, 41]
-                            }]
-                        }
-                        type="bar"
-                        width="800"
-                        height={400}
-                    />
-
+                    </Card>
                 </Grid>
             </Grid>
             <Grid container>
@@ -226,7 +192,9 @@ export default function Dashboard() {
                     direction="column"
                     justifyContent="space-around"
                     alignItems="flex-end">
-                    <div style={{ ...s, width: 400 }}>
+                    <div
+                        style={{ height: '100%', width: '100%' }}
+                    >
                         <DataGrid
                             rows={rows}
                             columns={columns}
@@ -250,40 +218,45 @@ export default function Dashboard() {
                     </div>
                 </Grid>
                 <Grid container item xs={8} style={s} >
-                    <Chart options={{
-                        labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
-                        chart: {
-                            type: 'polarArea',
-                        },
-                        stroke: {
-                            colors: ['#fff']
-                        },
-                        fill: {
-                            opacity: 0.8
-                        },
-                        legend: { position: 'left' },
-                        title: {
-                            text: "Título",
-                            align: "center"
-                        },
-                        responsive: [{
-                            breakpoint: 480,
-                            options: {
-                                chart: {
-                                    width: 200
-                                },
-                                legend: {
-                                    position: 'bottom'
+                    <Card style={{ width: "100%", height: "100%" }}>
+                        <Chart options={{
+                            labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+                            chart: {
+                                type: 'polarArea',
+                            },
+                            stroke: {
+                                colors: ['#fff']
+                            },
+                            fill: {
+                                opacity: 0.8
+                            },
+                            legend: { position: 'left' },
+                            title: {
+                                text: "Título",
+                                align: "center"
+                            },
+                            responsive: [{
+                                breakpoint: 480,
+                                options: {
+                                    chart: {
+                                        width: 200
+                                    },
+                                    legend: {
+                                        position: 'bottom'
+                                    }
                                 }
-                            }
-                        }]
-                    }}
-                        series={[10, 23, 30, 41, 59, 60, 71, 89, 90, 108]}
-                        type="polarArea"
-                        width="600" />
+                            }]
+                        }}
+                            series={[10, 23, 30, 41, 59, 60, 71, 89, 90, 108]}
+                            type="polarArea"
+                            // width="100%"
+                            height="100%"
+                            style={{ backgroundColor: '#fafafa' }}
+                        />
+                    </Card>
                 </Grid>
             </Grid>
 
-        </Grid>
+        </Grid >
     );
 }
