@@ -1,14 +1,73 @@
-import { InputOutlined, InputSharp } from '@mui/icons-material';
-import { Card, CardContent, Checkbox, FormControl, Grid, InputAdornment, InputBase, InputLabel, ListItemText, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
+import { Card, CardContent, Checkbox, FormControl, Grid, InputLabel, ListItemText, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import { GridColDef, GridColumnHeaderParams, GridRowsProp } from '@mui/x-data-grid';
 import { DataGrid } from '@mui/x-data-grid/DataGrid';
 import React from 'react';
 import Chart from "react-apexcharts";
 
+const virDoBanco = [
+    {
+        class: "2º Ano Matutino",
+        students: [
+            {
+                name: 'Daniel',
+                rounds: [
+                    {
+                        round: 1,
+                        resultsRounds: [
+                            { table: 1, sum_errors: 1 },
+                            { table: 2, sum_errors: 7 },
+                            { table: 3, sum_errors: 5 }]
+                    }]
+            }]
+    },
+    {
+        class: "2º Ano Vespertino",
+        students: [
+            {
+                name: 'Abigail',
+                rounds: [
+                    {
+                        round: 1, resultsRounds: [
+                            { table: 1, sum_errors: 1 },
+                            { table: 2, sum_errors: 4 },
+                            { table: 3, sum_errors: 3 }]
+                    },
+                    {
+                        round: 2, resultsRounds: [
+                            { table: 1, sum_errors: 0 },
+                            { table: 2, sum_errors: 2 },
+                            { table: 3, sum_errors: 3 }]
+                    }]
+            },
+            {
+                name: 'Catarina',
+                rounds: [
+                    {
+                        round: 1, resultsRounds: [
+                            { table: 1, sum_errors: 1 },
+                            { table: 2, sum_errors: 5 },
+                            { table: 3, sum_errors: 8 }]
+                    },
+                    {
+                        round: 2, resultsRounds: [
+                            { table: 1, sum_errors: 0 },
+                            { table: 2, sum_errors: 4 },
+                            { table: 3, sum_errors: 6 }]
+                    }]
+            }]
+    }
+];
+
+function getClasses() {
+    return virDoBanco.map(b => b.class);
+}
+
 const classes: string[] = ["2º Ano - Matutino", "2º Ano - Vespertino"];
 const students: string[] = ["Daniel", "Abigail", "Catarina"];
 const rounds: number[] = [1, 2, 3, 4, 5];
+const errorsFromRounds: object = { Primeiro: 10, Segundo: 20, Terceiro: 45 };
 
+// O dado deve vir do banco em ordem de quantidade de maior erro primeiro.
 const rows: GridRowsProp = [
     { id: 1, table: 1, errors: 10, },
     { id: 2, table: 2, errors: 20 },
@@ -42,7 +101,7 @@ const columns: GridColDef[] = [
 ];
 
 export default function Dashboard() {
-    const [classesSelected, setClassesSelected] = React.useState<string[]>([classes[0]]);
+    const [classesSelected, setClassesSelected] = React.useState<string[]>([getClasses()[0]]);
     const [studentSelected, setStudentSelected] = React.useState<string[]>(students);
     const [roundSelected, setRoundSelected] = React.useState<number[]>(rounds);
 
@@ -61,13 +120,15 @@ export default function Dashboard() {
 
     return (
         <Grid container>
-            <Grid container>
+            <Grid container item>
                 <Grid
+                    style={{ padding: 8 }}
                     container
                     xs={4}
                     item
                     direction="column"
                     justifyContent="space-around"
+
                 >
                     <FormControl>
                         <InputLabel>Turma</InputLabel>
@@ -80,6 +141,8 @@ export default function Dashboard() {
                             // fullWidth
                             name='Name'
                             placeholder='Da'
+                        // defaultValue={classesSelected[0]}
+                        // renderValue={classesSelected[0]}
 
 
                         >
@@ -156,29 +219,36 @@ export default function Dashboard() {
                         <Chart
                             options={{
                                 chart: {
-                                    id: "basic-bar"
+                                    id: "basic-bar",
+                                    type: 'bar'
                                 },
                                 xaxis: {
-                                    categories: [1, 2, 3, 4, 5, 6, 7, 8],
                                     title: {
                                         text: 'Rodada'
-                                    }
+                                    },
+                                    categories: Object.keys(errorsFromRounds)
                                 },
                                 yaxis: {
                                     title: {
                                         text: 'Quantidade de Erros'
                                     }
-                                }
+                                },
+                                // }}
                             }}
-                            series={
-                                [{
-                                    name: "series-1",
-                                    data: [57, 56, 54, 50, 49, 60, 49, 41]
-                                }]
-                            }
+                            series={[{
+                                data: Object.values(errorsFromRounds)
+                            }]}
+                            // series={
+                            //     [{
+                            //         name: "series-1",
+                            //         data: [57, 56, 54, 50, 49, 60, 49, 41]
+                            //     }]
+                            // }
+
+                            // serie={errorsFromRounds}
                             type="bar"
                             height="100%"
-                            // style={{ backgroundColor: '#fafafa' }}
+                        // style={{ backgroundColor: '#fafafa' }}
                         />
                     </Card>
                 </Grid>
@@ -188,10 +258,10 @@ export default function Dashboard() {
                     container
                     item
                     xs={4}
-                    // style={{...s, width: 400}}
                     direction="column"
                     justifyContent="space-around"
-                    alignItems="flex-end">
+                    alignItems="flex-end"
+                    style={{ padding: 8 }}>
                     <div
                         style={{ height: '100%', width: '100%' }}
                     >
@@ -219,39 +289,40 @@ export default function Dashboard() {
                 </Grid>
                 <Grid container item xs={8} style={s} >
                     <Card style={{ width: "100%", height: "100%" }}>
-                        <Chart options={{
-                            labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
-                            chart: {
-                                type: 'polarArea',
-                            },
-                            stroke: {
-                                colors: ['#fff']
-                            },
-                            fill: {
-                                opacity: 0.8
-                            },
-                            legend: { position: 'left' },
-                            title: {
-                                text: "Título",
-                                align: "center"
-                            },
-                            responsive: [{
-                                breakpoint: 480,
-                                options: {
-                                    chart: {
-                                        width: 200
-                                    },
-                                    legend: {
-                                        position: 'bottom'
+                        <Chart
+                            options={{
+                                labels: rows.map(r => `Tabuada de ${r.table}`),
+                                chart: {
+                                    type: 'polarArea',
+                                },
+                                stroke: {
+                                    colors: ['#fff']
+                                },
+                                fill: {
+                                    opacity: 0.8
+                                },
+                                legend: { position: 'left' },
+                                title: {
+                                    text: "Número de Erros por tabuada",
+                                    align: "center"
+                                },
+                                responsive: [{
+                                    breakpoint: 480,
+                                    options: {
+                                        chart: {
+                                            width: 200
+                                        },
+                                        legend: {
+                                            position: 'bottom'
+                                        }
                                     }
-                                }
-                            }]
-                        }}
-                            series={[10, 23, 30, 41, 59, 60, 71, 89, 90, 108]}
+                                }]
+                            }}
+                            series={rows.map(r => r.errors)}
                             type="polarArea"
                             // width="100%"
                             height="100%"
-                            // style={{ backgroundColor: '#fafafa' }}
+                        // style={{ backgroundColor: '#fafafa' }}
                         />
                     </Card>
                 </Grid>
