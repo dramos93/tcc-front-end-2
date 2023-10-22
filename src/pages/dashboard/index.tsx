@@ -1,69 +1,135 @@
-import { Card, CardContent, Checkbox, FormControl, Grid, InputLabel, ListItemText, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
+import { Button, ButtonBase, ButtonGroup, Card, CardContent, Checkbox, FormControl, Grid, InputLabel, ListItemText, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import { GridColDef, GridColumnHeaderParams, GridRowsProp } from '@mui/x-data-grid';
 import { DataGrid } from '@mui/x-data-grid/DataGrid';
 import React from 'react';
 import Chart from "react-apexcharts";
 
+
+interface GroupOfStudents {
+    className: string;
+    students: Student[];
+}
+
+interface Student {
+    name: string;
+    rounds: Rounds[];
+    // Outras propriedades, se houver
+}
+
+interface Rounds {
+    round: number;
+    sum_of_round_errors: number;
+    resultsRounds: ResultsRounds[];
+}
+
+interface ResultsRounds {
+    table: number;
+    sum_of_multiplication_table_errors: number;
+}
+
+
 const virDoBanco = [
     {
-        class: "2º Ano Matutino",
+        className: "1º Ano Matutino",
         students: [
             {
                 name: 'Daniel',
                 rounds: [
                     {
                         round: 1,
+                        sum_of_round_errors: 13,
                         resultsRounds: [
-                            { table: 1, sum_errors: 1 },
-                            { table: 2, sum_errors: 7 },
-                            { table: 3, sum_errors: 5 }]
+                            { table: 1, sum_of_multiplication_table_errors: 1 },
+                            { table: 2, sum_of_multiplication_table_errors: 7 },
+                            { table: 3, sum_of_multiplication_table_errors: 5 }]
                     }]
             }]
     },
     {
-        class: "2º Ano Vespertino",
+        className: "2º Ano Vespertino",
         students: [
             {
                 name: 'Abigail',
                 rounds: [
                     {
-                        round: 1, resultsRounds: [
-                            { table: 1, sum_errors: 1 },
-                            { table: 2, sum_errors: 4 },
-                            { table: 3, sum_errors: 3 }]
+                        round: 1,
+                        sum_of_round_errors: 8,
+                        resultsRounds: [
+                            {
+                                table: 1,
+                                sum_of_multiplication_table_errors: 1
+                            },
+                            {
+                                table: 2,
+                                sum_of_multiplication_table_errors: 4
+                            },
+                            {
+                                table: 3,
+                                sum_of_multiplication_table_errors: 3
+                            }]
                     },
                     {
-                        round: 2, resultsRounds: [
-                            { table: 1, sum_errors: 0 },
-                            { table: 2, sum_errors: 2 },
-                            { table: 3, sum_errors: 3 }]
+                        round: 2,
+                        sum_of_round_errors: 5,
+                        resultsRounds: [
+                            {
+                                table: 1,
+                                sum_of_multiplication_table_errors: 0
+                            },
+                            {
+                                table: 2,
+                                sum_of_multiplication_table_errors: 2
+                            },
+                            {
+                                table: 3,
+                                sum_of_multiplication_table_errors: 3
+                            }]
                     }]
             },
             {
                 name: 'Catarina',
                 rounds: [
                     {
-                        round: 1, resultsRounds: [
-                            { table: 1, sum_errors: 1 },
-                            { table: 2, sum_errors: 5 },
-                            { table: 3, sum_errors: 8 }]
+                        round: 1,
+                        sum_of_round_errors: 14,
+                        resultsRounds: [
+                            {
+                                table: 1,
+                                sum_of_multiplication_table_errors: 1
+                            },
+                            {
+                                table: 2,
+                                sum_of_multiplication_table_errors: 5
+                            },
+                            {
+                                table: 3,
+                                sum_of_multiplication_table_errors: 8
+                            }]
                     },
                     {
-                        round: 2, resultsRounds: [
-                            { table: 1, sum_errors: 0 },
-                            { table: 2, sum_errors: 4 },
-                            { table: 3, sum_errors: 6 }]
+                        round: 2,
+                        sum_of_round_errors: 10,
+                        resultsRounds: [
+                            {
+                                table: 1,
+                                sum_of_multiplication_table_errors: 0
+                            },
+                            {
+                                table: 2,
+                                sum_of_multiplication_table_errors: 4
+                            },
+                            {
+                                table: 3,
+                                sum_of_multiplication_table_errors: 6
+                            }]
                     }]
             }]
     }
 ];
 
-function getClasses() {
-    return virDoBanco.map(b => b.class);
-}
+const firstDatafromDB = virDoBanco.map(b => b.className)[0];
 
-const classes: string[] = ["2º Ano - Matutino", "2º Ano - Vespertino"];
-const students: string[] = ["Daniel", "Abigail", "Catarina"];
+const classes: string[] = virDoBanco.map(c => c.className);
 const rounds: number[] = [1, 2, 3, 4, 5];
 const errorsFromRounds: object = { Primeiro: 10, Segundo: 20, Terceiro: 45 };
 
@@ -100,26 +166,55 @@ const columns: GridColDef[] = [
     },
 ];
 
+function getStudentsFromDB(className: string): Student[] {
+    // Aqui vai a doc
+    return virDoBanco.filter(b => b.className === className).flatMap(y => y.students);
+
+}
+
+
+const s = { 'height': 400, backgroundColor: '#ffffff', padding: 8 };
+
 export default function Dashboard() {
-    const [classesSelected, setClassesSelected] = React.useState<string[]>([getClasses()[0]]);
-    const [studentSelected, setStudentSelected] = React.useState<string[]>(students);
+    const [classSelected, setClassSelected] = React.useState<string>(firstDatafromDB);
+    const [studentSelected, setStudentSelected] = React.useState<string[]>(getStudentsFromDB(firstDatafromDB).map(s => s.name));
+    const [students, setStudents] = React.useState<Student[]>(getStudentsFromDB(firstDatafromDB));
     const [roundSelected, setRoundSelected] = React.useState<number[]>(rounds);
 
     const handleChangeClasses = (event: SelectChangeEvent<any>) => {
-        setClassesSelected(event.target?.value);
+        const value = event?.target?.value;
+        setClassSelected(value);
+        // let newStudentsNames = getStudentsFromDB(value);
+        setStudents(getStudentsFromDB(value));
+        setStudentSelected(getStudentsFromDB(value).map(s => s.name));
+        // console.log(newStudentsNames);
     };
 
     const handleChangeStudents = (event: SelectChangeEvent<any>) => {
-        setStudentSelected(event?.target?.value);
+        const value = event?.target?.value;
+        setStudentSelected(value);
     };
 
     const handleChangeRound = (event: SelectChangeEvent<any>) => {
         setRoundSelected(event.target?.value);
     };
-    const s = { 'height': 400, backgroundColor: '#ffffff', padding: 8 };
 
     return (
         <Grid container>
+            <Button onClick={
+                () => {
+                    const allRounds = students.flatMap(r => r.rounds);
+                    console.log(allRounds);
+                    console.log(allRounds.length);
+                    const sumErrors = allRounds.map(r => r.resultsRounds);
+                    console.log(sumErrors);
+
+
+
+                }
+            }>
+                APERTE AQUI
+            </Button>
             <Grid container item>
                 <Grid
                     style={{ padding: 8 }}
@@ -135,14 +230,14 @@ export default function Dashboard() {
                         <Select
                             // labelId="demo-simple-select-label"
                             // id="demo-simple-select"
-                            value={classesSelected}
+                            value={classSelected}
                             label="Turma"
                             onChange={handleChangeClasses}
                             // fullWidth
                             name='Name'
                             placeholder='Da'
-                        // defaultValue={classesSelected[0]}
-                        // renderValue={classesSelected[0]}
+                        // defaultValue={classSelected[0]}
+                        // renderValue={classSelected[0]}
 
 
                         >
@@ -164,10 +259,10 @@ export default function Dashboard() {
                         // fullWidth
                         // MenuProps={MenuProps} //Aqui vai os props de largura, etc.
                         >
-                            {students.map((student) => (
-                                <MenuItem key={student} value={student}>
-                                    <Checkbox checked={studentSelected.indexOf(student) > -1} />
-                                    <ListItemText primary={student} />
+                            {students?.map((student) => (
+                                <MenuItem key={student.name} value={student.name}>
+                                    <Checkbox checked={studentSelected.indexOf(student.name) > -1} />
+                                    <ListItemText primary={student.name} />
                                 </MenuItem>
                             ))}
                         </Select>
