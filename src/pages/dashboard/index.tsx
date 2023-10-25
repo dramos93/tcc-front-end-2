@@ -1,4 +1,4 @@
-import { Button, ButtonBase, ButtonGroup, Card, CardContent, Checkbox, FormControl, Grid, InputLabel, ListItemText, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
+import { Button, Card, CardContent, Checkbox, FormControl, Grid, InputLabel, ListItemText, MenuItem, Select, SelectChangeEvent, Typography } from '@mui/material';
 import { GridColDef, GridColumnHeaderParams, GridRowsProp } from '@mui/x-data-grid';
 import { DataGrid } from '@mui/x-data-grid/DataGrid';
 import React from 'react';
@@ -28,7 +28,7 @@ interface ResultsRounds {
 }
 
 
-const virDoBanco = [
+const virDoBanco: GroupOfStudents[] = [
     {
         className: "1º Ano Matutino",
         students: [
@@ -122,15 +122,32 @@ const virDoBanco = [
                                 table: 3,
                                 sum_of_multiplication_table_errors: 6
                             }]
-                    }]
+                    },
+                    {
+                        round: 3,
+                        sum_of_round_errors: 11,
+                        resultsRounds: [
+                            {
+                                table: 1,
+                                sum_of_multiplication_table_errors: 1
+                            },
+                            {
+                                table: 2,
+                                sum_of_multiplication_table_errors: 4
+                            },
+                            {
+                                table: 3,
+                                sum_of_multiplication_table_errors: 6
+                            }]
+                    }
+                ]
             }]
     }
 ];
 
-const firstDatafromDB = virDoBanco.map(b => b.className)[0];
+const firstDatafromDB: string = virDoBanco.map(b => b.className)[0];
 
 const classes: string[] = virDoBanco.map(c => c.className);
-const rounds: number[] = [1, 2, 3, 4, 5];
 const errorsFromRounds: object = { Primeiro: 10, Segundo: 20, Terceiro: 45 };
 
 // O dado deve vir do banco em ordem de quantidade de maior erro primeiro.
@@ -175,39 +192,67 @@ function getStudentsFromDB(className: string): Student[] {
 
 const s = { 'height': 400, backgroundColor: '#ffffff', padding: 8 };
 
+const changeRound = (students: Student[], studentSelected: string[], roundDistinct: number[]) => {
+    const studentsArray: Student[] = students.filter(s => studentSelected.some(ss => ss === s.name));
+    const allRoundsSelected: Rounds[] = studentsArray.flatMap(sa => sa.rounds);
+    const sumRoundsDistinct = roundDistinct.map(round => ({
+        round,
+        average_sum_of_round_errors: allRoundsSelected
+            .filter(item => item.round === round)
+            .reduce((total, item) => total + item.sum_of_round_errors, 0) /
+            allRoundsSelected.filter(item => item.round === round).length
+    }));
+
+    const sumAllRounds: number = sumRoundsDistinct.reduce((total, item) => total += item['average_sum_of_round_errors'], 0);
+    return sumAllRounds;
+};
+
 export default function Dashboard() {
     const [classSelected, setClassSelected] = React.useState<string>(firstDatafromDB);
     const [studentSelected, setStudentSelected] = React.useState<string[]>(getStudentsFromDB(firstDatafromDB).map(s => s.name));
     const [students, setStudents] = React.useState<Student[]>(getStudentsFromDB(firstDatafromDB));
-    const [roundSelected, setRoundSelected] = React.useState<number[]>(rounds);
+    const allRounds = getStudentsFromDB(firstDatafromDB).flatMap(r => r.rounds).flatMap(r => r.round);
+    const roundsDistinctFromFirstData: number[] = Array.from(new Set(allRounds).keys());
+    const [roundDistinct, setRoundDistinct] = React.useState<number[]>(roundsDistinctFromFirstData);
+    const [roundSelected, setRoundSelected] = React.useState<number[]>(roundsDistinctFromFirstData);
+    const [averageErrors, setAverageErrors] = React.useState<number>(changeRound(getStudentsFromDB(firstDatafromDB), getStudentsFromDB(firstDatafromDB).map(s => s.name), roundsDistinctFromFirstData));
 
     const handleChangeClasses = (event: SelectChangeEvent<any>) => {
         const value = event?.target?.value;
         setClassSelected(value);
-        // let newStudentsNames = getStudentsFromDB(value);
         setStudents(getStudentsFromDB(value));
         setStudentSelected(getStudentsFromDB(value).map(s => s.name));
-        // console.log(newStudentsNames);
+        const allRounds = getStudentsFromDB(value).flatMap(r => r.rounds).flatMap(r => r.round);
+        const roundsDistinctFromFirstData: number[] = Array.from(new Set(allRounds).keys());
+        setRoundDistinct(roundsDistinctFromFirstData);
+        setRoundSelected(roundsDistinctFromFirstData);
+        setAverageErrors(changeRound(students, studentSelected, roundDistinct));
+
     };
 
     const handleChangeStudents = (event: SelectChangeEvent<any>) => {
-        const value = event?.target?.value;
+        const value: string[] = event?.target?.value;
         setStudentSelected(value);
+        const studentSelectedArray: Student[] = students.filter(s => value.some(v => s.name === v));
+        const studentRounds: number[] = studentSelectedArray.flatMap(r => r.rounds).flatMap(r => r.round);
+        const roundsDistinctFromFirstData: number[] = Array.from(new Set(studentRounds).keys());
+        setRoundDistinct(roundsDistinctFromFirstData);
+        setRoundSelected(roundsDistinctFromFirstData);
+        setAverageErrors(changeRound(students, studentSelected, roundDistinct));
     };
 
     const handleChangeRound = (event: SelectChangeEvent<any>) => {
-        setRoundSelected(event.target?.value);
+        const value: number[] = event?.target?.value;
+        setRoundSelected(value);
+        setAverageErrors(changeRound(students, studentSelected, roundDistinct));
     };
+
 
     return (
         <Grid container>
             <Button onClick={
                 () => {
-                    const allRounds = students.flatMap(r => r.rounds);
-                    console.log(allRounds);
-                    console.log(allRounds.length);
-                    const sumErrors = allRounds.map(r => r.resultsRounds);
-                    console.log(sumErrors);
+
 
 
 
@@ -279,7 +324,7 @@ export default function Dashboard() {
                         // input={<OutlinedInput label="Tag" />}
                         // fullWidth
                         >
-                            {rounds.map(c => (
+                            {roundDistinct.map(c => (
                                 <MenuItem key={c} value={c}>{c}</MenuItem>
                             ))}
                         </Select>
@@ -291,7 +336,7 @@ export default function Dashboard() {
                                     MÉDIA DE ERROS POR RODADA
                                 </Typography>
                                 <Typography variant='h3' textAlign='center'>
-                                    14
+                                    {averageErrors}
                                 </Typography>
                             </CardContent>
                         </Card>
