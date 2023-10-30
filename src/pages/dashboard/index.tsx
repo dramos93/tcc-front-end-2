@@ -27,6 +27,11 @@ interface ResultsRounds {
     sum_of_multiplication_table_errors: number;
 }
 
+interface StudentTableInterface {
+    'id': string,
+    'name': string,
+    'sum_errors': number;
+}
 
 const virDoBanco: GroupOfStudents[] = [
     {
@@ -43,7 +48,32 @@ const virDoBanco: GroupOfStudents[] = [
                             { table: 2, sum_of_multiplication_table_errors: 7 },
                             { table: 3, sum_of_multiplication_table_errors: 5 }]
                     }]
-            }]
+            }, {
+                name: 'Daniel Filho',
+                rounds: [
+                    {
+                        round: 1,
+                        sum_of_round_errors: 20,
+                        resultsRounds: [
+                            { table: 1, sum_of_multiplication_table_errors: 8 },
+                            { table: 2, sum_of_multiplication_table_errors: 7 },
+                            { table: 3, sum_of_multiplication_table_errors: 5 }]
+                    }]
+            }, {
+                name: 'Artur',
+                rounds: [
+                    {
+                        round: 1,
+                        sum_of_round_errors: 23,
+                        resultsRounds: [
+                            { table: 1, sum_of_multiplication_table_errors: 1 },
+                            { table: 2, sum_of_multiplication_table_errors: 7 },
+                            { table: 3, sum_of_multiplication_table_errors: 15 }]
+                    }]
+            },
+
+
+        ]
     },
     {
         className: "2º Ano Vespertino",
@@ -145,41 +175,67 @@ const virDoBanco: GroupOfStudents[] = [
     }
 ];
 
-const firstDatafromDB: string = virDoBanco.map(b => b.className)[0];
-
+const firstClassSelected: string = virDoBanco.map(c => c.className)[0];
+const firstStudentsSelecteds: string[] = getStudentsFromDB(firstClassSelected).map(s => s.name);
 const classes: string[] = virDoBanco.map(c => c.className);
-const errorsFromRounds: object = { Primeiro: 10, Segundo: 20, Terceiro: 45 };
 
 // O dado deve vir do banco em ordem de quantidade de maior erro primeiro.
-const rows: GridRowsProp = [
-    { id: 1, table: 1, errors: 10, },
-    { id: 2, table: 2, errors: 20 },
-    { id: 3, table: 3, errors: 30 },
-    { id: 4, table: 4, errors: 12 },
-    { id: 5, table: 5, errors: 5 },
-    { id: 6, table: 6, errors: 6 },
-    { id: 7, table: 7, errors: 18 },
-    { id: 8, table: 8, errors: 23 },
-    { id: 9, table: 9, errors: 26 },
-    { id: 10, table: 10, errors: 18 },
-];
+function studentTable(students: Student[], roundSelected: number[]): GridRowsProp {
+    const studentTable: StudentTableInterface[] = students
+        .map(student => {
+            return {
+                'id': student.name,
+                'name': student.name,
+                'sum_errors': student
+                    .rounds
+                    .filter(r => roundSelected.some(rr => r.round === rr))
+                    .map(rs => rs.sum_of_round_errors)
+                    .reduce((previousValue, currentValue) => previousValue += currentValue, 0)
+            };
+        });
+
+    studentTable.sort(function (a, b): number {
+        if (a.sum_errors < b.sum_errors) return 1;
+        if (a.sum_errors > b.sum_errors) return -1;
+        return 0;
+    });
+
+    return studentTable;
+}
+
+function RoundTable(students: Student[], studentsSelecteds: string[], roundSelected: number[]) {
+    const studentArray: Student[] = students.filter(student => studentsSelecteds.some(ss => ss === student.name));
+    const rounds: Rounds[] = studentArray.flatMap(student => student.rounds);
+    const roundsTable: object | any = {};
+
+    rounds.forEach((r: Rounds) => {
+        const roundKey = `${r.round}ª Rodada`;//Aqui a lógica não está dando certo.
+        if (Object.keys(roundsTable).some(rt => rt === roundKey)) {
+            if (roundsTable !== undefined)
+                roundsTable[roundKey] += r.sum_of_round_errors;
+        } else
+            roundsTable[roundKey] = r.sum_of_round_errors;
+    });
+
+    return roundsTable;
+}
 
 const columns: GridColDef[] = [
     {
-        field: 'table',
+        field: 'name',
         flex: 0.5,
         align: 'center',
         headerAlign: 'center',
         renderHeader: (params: GridColumnHeaderParams) => (
-            <strong>Tabuada</strong>),
+            <strong>Nome do Aluno</strong>),
     },
     {
-        field: 'errors',
+        field: 'sum_errors',
         flex: 0.5,
         align: 'center',
         headerAlign: 'center',
         renderHeader: (params: GridColumnHeaderParams) => (
-            <strong>Quantidade de Erros</strong>)
+            <strong>Soma de Erros</strong>)
     },
 ];
 
@@ -189,6 +245,17 @@ function getStudentsFromDB(className: string): Student[] {
 
 }
 
+function getStudentsSelecteds(classSelected: string): string[] {
+
+    return getStudentsFromDB(classSelected).map(s => s.name);
+}
+
+function getRoundsDistinct(classSelected: string): number[] {
+
+    const allRounds: number[] = getStudentsFromDB(classSelected).flatMap(r => r.rounds).flatMap(r => r.round);
+
+    return Array.from(new Set(allRounds).keys());
+}
 
 const s = { 'height': 400, backgroundColor: '#ffffff', padding: 8 };
 
@@ -204,47 +271,74 @@ const changeRound = (students: Student[], studentSelected: string[], roundDistin
     }));
 
     const sumAllRounds: number = sumRoundsDistinct.reduce((total, item) => total += item['average_sum_of_round_errors'], 0);
-    return sumAllRounds;
+    return roundDistinct.length && sumAllRounds / roundDistinct.length;
 };
 
 export default function Dashboard() {
-    const [classSelected, setClassSelected] = React.useState<string>(firstDatafromDB);
-    const [studentSelected, setStudentSelected] = React.useState<string[]>(getStudentsFromDB(firstDatafromDB).map(s => s.name));
-    const [students, setStudents] = React.useState<Student[]>(getStudentsFromDB(firstDatafromDB));
-    const allRounds = getStudentsFromDB(firstDatafromDB).flatMap(r => r.rounds).flatMap(r => r.round);
-    const roundsDistinctFromFirstData: number[] = Array.from(new Set(allRounds).keys());
-    const [roundDistinct, setRoundDistinct] = React.useState<number[]>(roundsDistinctFromFirstData);
-    const [roundSelected, setRoundSelected] = React.useState<number[]>(roundsDistinctFromFirstData);
-    const [averageErrors, setAverageErrors] = React.useState<number>(changeRound(getStudentsFromDB(firstDatafromDB), getStudentsFromDB(firstDatafromDB).map(s => s.name), roundsDistinctFromFirstData));
+    const [classSelected, setClassSelected] = React.useState<string>(firstClassSelected);
+    const [studentsSelecteds, setStudentsSelecteds] = React.useState<string[]>(firstStudentsSelecteds);
+    const [roundSelected, setRoundSelected] = React.useState<number[]>(getRoundsDistinct(firstClassSelected));
+    const [students, setStudents] = React.useState<Student[]>(getStudentsFromDB(firstClassSelected));
+    const [roundDistinct, setRoundDistinct] = React.useState<number[]>(getRoundsDistinct(firstClassSelected));
+    const [averageErrors, setAverageErrors] = React.useState<number>(
+        changeRound(
+            getStudentsFromDB(firstClassSelected),
+            firstStudentsSelecteds,
+            getRoundsDistinct(firstClassSelected)
+        ));
 
     const handleChangeClasses = (event: SelectChangeEvent<any>) => {
-        const value = event?.target?.value;
-        setClassSelected(value);
-        setStudents(getStudentsFromDB(value));
-        setStudentSelected(getStudentsFromDB(value).map(s => s.name));
-        const allRounds = getStudentsFromDB(value).flatMap(r => r.rounds).flatMap(r => r.round);
-        const roundsDistinctFromFirstData: number[] = Array.from(new Set(allRounds).keys());
-        setRoundDistinct(roundsDistinctFromFirstData);
-        setRoundSelected(roundsDistinctFromFirstData);
-        setAverageErrors(changeRound(students, studentSelected, roundDistinct));
+        const classSelected: string = event?.target?.value;
+
+        const studentsFromDB: Student[] = getStudentsFromDB(classSelected);
+        setStudents(studentsFromDB);
+
+        const roundDistinct: number[] = getRoundsDistinct(classSelected);
+        setRoundDistinct(roundDistinct);
+        setRoundSelected(roundDistinct);
+
+
+        const studentSelecteds: string[] = getStudentsSelecteds(classSelected);
+        setAverageErrors(
+            changeRound(studentsFromDB, studentSelecteds, roundDistinct)
+        );
+
+        setClassSelected(classSelected);
+        setStudentsSelecteds(studentSelecteds);
 
     };
 
     const handleChangeStudents = (event: SelectChangeEvent<any>) => {
-        const value: string[] = event?.target?.value;
-        setStudentSelected(value);
-        const studentSelectedArray: Student[] = students.filter(s => value.some(v => s.name === v));
-        const studentRounds: number[] = studentSelectedArray.flatMap(r => r.rounds).flatMap(r => r.round);
-        const roundsDistinctFromFirstData: number[] = Array.from(new Set(studentRounds).keys());
-        setRoundDistinct(roundsDistinctFromFirstData);
-        setRoundSelected(roundsDistinctFromFirstData);
-        setAverageErrors(changeRound(students, studentSelected, roundDistinct));
+        const selectedStudents: string[] = event?.target?.value;
+
+        if (selectedStudents.length !== 0) {
+            setStudentsSelecteds(selectedStudents);
+            const studentSelectedArray: Student[] = students.filter(s => selectedStudents.some(v => s.name === v));
+            const studentsRounds: number[] = studentSelectedArray.flatMap(r => r.rounds).flatMap(r => r.round);
+            const roundsDistinctFromDB: number[] = Array.from(new Set(studentsRounds).keys());
+            setRoundDistinct(roundsDistinctFromDB);
+            setRoundSelected(roundsDistinctFromDB);
+            setAverageErrors(
+                changeRound(
+                    students,
+                    selectedStudents,
+                    roundsDistinctFromDB
+                )
+            );
+        }
     };
 
     const handleChangeRound = (event: SelectChangeEvent<any>) => {
-        const value: number[] = event?.target?.value;
-        setRoundSelected(value);
-        setAverageErrors(changeRound(students, studentSelected, roundDistinct));
+        const rounds: number[] = event?.target?.value;
+
+        if (rounds.length !== 0) {
+            setRoundSelected(rounds);
+            setAverageErrors(changeRound(students, studentsSelecteds, rounds));
+        }
+    };
+
+    function getRoundTable(): object {
+        return RoundTable(students, studentsSelecteds, roundSelected);
     };
 
 
@@ -253,7 +347,8 @@ export default function Dashboard() {
             <Button onClick={
                 () => {
 
-
+                    console.table(getRoundTable());
+                    // console.log(Object.values(errorsFromRounds));
 
 
                 }
@@ -276,16 +371,16 @@ export default function Dashboard() {
                             // labelId="demo-simple-select-label"
                             // id="demo-simple-select"
                             value={classSelected}
+                            // defaultValue={classSelected.map(c => c.className)}
                             label="Turma"
                             onChange={handleChangeClasses}
-                            // fullWidth
-                            name='Name'
-                            placeholder='Da'
+                        // fullWidth
                         // defaultValue={classSelected[0]}
                         // renderValue={classSelected[0]}
 
 
                         >
+                            {/* .map(c => c.className) */}
                             {classes.map(c => (
                                 <MenuItem key={c} value={c}>{c}</MenuItem>
                             ))}
@@ -295,7 +390,7 @@ export default function Dashboard() {
                         <InputLabel>Alunos</InputLabel>
                         <Select
                             // id="demo-multiple-checkbox"
-                            value={studentSelected}
+                            value={studentsSelecteds}
                             label="Alunos"
                             onChange={handleChangeStudents}
                             renderValue={(selected) => selected.join(', ')}
@@ -306,7 +401,7 @@ export default function Dashboard() {
                         >
                             {students?.map((student) => (
                                 <MenuItem key={student.name} value={student.name}>
-                                    <Checkbox checked={studentSelected.indexOf(student.name) > -1} />
+                                    <Checkbox checked={studentsSelecteds.indexOf(student.name) > -1} />
                                     <ListItemText primary={student.name} />
                                 </MenuItem>
                             ))}
@@ -336,7 +431,7 @@ export default function Dashboard() {
                                     MÉDIA DE ERROS POR RODADA
                                 </Typography>
                                 <Typography variant='h3' textAlign='center'>
-                                    {averageErrors}
+                                    {averageErrors.toFixed(2)}
                                 </Typography>
                             </CardContent>
                         </Card>
@@ -348,7 +443,7 @@ export default function Dashboard() {
                                     RODADAS COMPLETAS
                                 </Typography>
                                 <Typography variant='h3' textAlign='center'>
-                                    16
+                                    {roundDistinct.length}
                                 </Typography>
                             </CardContent>
                         </Card>
@@ -357,6 +452,8 @@ export default function Dashboard() {
                 <Grid container item xs={8} style={s}>
                     <Card style={{ width: "100%", height: "100%" }}>
                         <Chart
+                            type="bar"
+                            height="100%"
                             options={{
                                 chart: {
                                     id: "basic-bar",
@@ -366,7 +463,7 @@ export default function Dashboard() {
                                     title: {
                                         text: 'Rodada'
                                     },
-                                    categories: Object.keys(errorsFromRounds)
+                                    categories: Object.keys(getRoundTable())
                                 },
                                 yaxis: {
                                     title: {
@@ -376,19 +473,8 @@ export default function Dashboard() {
                                 // }}
                             }}
                             series={[{
-                                data: Object.values(errorsFromRounds)
+                                data: Object.values(getRoundTable())
                             }]}
-                            // series={
-                            //     [{
-                            //         name: "series-1",
-                            //         data: [57, 56, 54, 50, 49, 60, 49, 41]
-                            //     }]
-                            // }
-
-                            // serie={errorsFromRounds}
-                            type="bar"
-                            height="100%"
-                        // style={{ backgroundColor: '#fafafa' }}
                         />
                     </Card>
                 </Grid>
@@ -406,30 +492,37 @@ export default function Dashboard() {
                         style={{ height: '100%', width: '100%' }}
                     >
                         <DataGrid
-                            rows={rows}
+                            rows={studentTable(students, roundSelected)}
                             columns={columns}
                             density="compact"
                             hideFooter
                             rowHeight={50}
-                            // getRowHeight={({ id, densityFactor }: GridRowHeightParams) => {
-                            //     if ((id as number) % 2 === 0) {
-                            //         return 100 * densityFactor;
-                            //     }
+                            rowSelection={false}
+                        // onRowSelectionModelChange={(rows: GridRowId[] | number[], a) => {
+                        //     let parseRows: string[] = [];
+                        //     for (let index = 0; index < rows.length; index++) {
+                        //         const r = rows[index];
+                        //         // console.log(typeof r);
+                        //         parseRows = [...parseRows, r.toString()];
 
-                            //     return null;
-                            // }}
-                            // getEstimatedRowHeight={() => 'auto'}
-                            // row
-                            // pageSizeOptions={[20]}
-                            // paginationMode="server"
-                            // disableRowSelectionOnClick
-                            onCellClick={v => console.log(v)}
+                        //     }
+                        //     console.log(a);
+                        //     // console.log(parseRows);
+                        //     setStudentsSelecteds(parseRows);
+                        // }}
+                        // rowSelection={['Daniel']}
+                        // rowSelectionModel={['Daniel']}
+                        // initialState={ }
+                        // onCellClick={v => console.log(v)}
+                        // disableRowSelectionOnClick
+                        // disableColumnSelector
+                        // disableDensitySelector
                         />
                     </div>
                 </Grid>
                 <Grid container item xs={8} style={s} >
                     <Card style={{ width: "100%", height: "100%" }}>
-                        <Chart
+                        {/* <Chart
                             options={{
                                 labels: rows.map(r => `Tabuada de ${r.table}`),
                                 chart: {
@@ -458,12 +551,12 @@ export default function Dashboard() {
                                     }
                                 }]
                             }}
-                            series={rows.map(r => r.errors)}
+                            series={rows.map(r => r.sum_errors)}
                             type="polarArea"
                             // width="100%"
                             height="100%"
                         // style={{ backgroundColor: '#fafafa' }}
-                        />
+                        /> */}
                     </Card>
                 </Grid>
             </Grid>
