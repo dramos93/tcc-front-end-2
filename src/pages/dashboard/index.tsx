@@ -203,9 +203,9 @@ function studentTable(students: Student[], roundSelected: number[]): GridRowsPro
     return studentTable;
 }
 
-function RoundTable(students: Student[], studentsSelecteds: string[], roundSelected: number[]) {
-    const studentArray: Student[] = students.filter(student => studentsSelecteds.some(ss => ss === student.name));
-    const rounds: Rounds[] = studentArray.flatMap(student => student.rounds);
+function barData(students: Student[], studentsSelecteds: string[], roundSelected: number[]) {
+    const studentFilteredBySelecteds: Student[] = students.filter(student => studentsSelecteds.some(ss => ss === student.name));
+    const rounds: Rounds[] = studentFilteredBySelecteds.flatMap(student => student.rounds);
     const roundsTable: object | any = {};
 
     rounds.forEach((r: Rounds) => {
@@ -219,6 +219,25 @@ function RoundTable(students: Student[], studentsSelecteds: string[], roundSelec
 
     return roundsTable;
 }
+
+function polarData(students: Student[], studentsSelecteds: string[], roundSelected: number[]) {
+    const studentFilteredBySelecteds: Student[] = students.filter(student => studentsSelecteds.some(ss => ss === student.name));
+    const roundsFilteredByRound = studentFilteredBySelecteds.flatMap(x => x.rounds).filter(r => roundSelected.some(rs => rs === r.round));
+    const tablesSelecteds = roundsFilteredByRound.flatMap(r => r.resultsRounds);
+    const tables: object | any = {};
+
+    tablesSelecteds.forEach((r) => {
+        const roundKey = `Tabuada ${r.table}`;//Aqui a lógica não está dando certo.
+        if (Object.keys(tables).some(rt => rt === roundKey)) {
+            if (tables !== undefined)
+                tables[roundKey] += r.sum_of_multiplication_table_errors;
+        } else
+            tables[roundKey] = r.sum_of_multiplication_table_errors;
+    });
+
+    return tables;
+}
+
 
 const columns: GridColDef[] = [
     {
@@ -250,7 +269,7 @@ function getStudentsSelecteds(classSelected: string): string[] {
     return getStudentsFromDB(classSelected).map(s => s.name);
 }
 
-function getRoundsDistinct(classSelected: string): number[] {
+function getBarsDistinct(classSelected: string): number[] {
 
     const allRounds: number[] = getStudentsFromDB(classSelected).flatMap(r => r.rounds).flatMap(r => r.round);
 
@@ -277,14 +296,14 @@ const changeRound = (students: Student[], studentSelected: string[], roundDistin
 export default function Dashboard() {
     const [classSelected, setClassSelected] = React.useState<string>(firstClassSelected);
     const [studentsSelecteds, setStudentsSelecteds] = React.useState<string[]>(firstStudentsSelecteds);
-    const [roundSelected, setRoundSelected] = React.useState<number[]>(getRoundsDistinct(firstClassSelected));
+    const [roundSelected, setRoundSelected] = React.useState<number[]>(getBarsDistinct(firstClassSelected));
     const [students, setStudents] = React.useState<Student[]>(getStudentsFromDB(firstClassSelected));
-    const [roundDistinct, setRoundDistinct] = React.useState<number[]>(getRoundsDistinct(firstClassSelected));
+    const [roundDistinct, setRoundDistinct] = React.useState<number[]>(getBarsDistinct(firstClassSelected));
     const [averageErrors, setAverageErrors] = React.useState<number>(
         changeRound(
             getStudentsFromDB(firstClassSelected),
             firstStudentsSelecteds,
-            getRoundsDistinct(firstClassSelected)
+            getBarsDistinct(firstClassSelected)
         ));
 
     const handleChangeClasses = (event: SelectChangeEvent<any>) => {
@@ -293,7 +312,7 @@ export default function Dashboard() {
         const studentsFromDB: Student[] = getStudentsFromDB(classSelected);
         setStudents(studentsFromDB);
 
-        const roundDistinct: number[] = getRoundsDistinct(classSelected);
+        const roundDistinct: number[] = getBarsDistinct(classSelected);
         setRoundDistinct(roundDistinct);
         setRoundSelected(roundDistinct);
 
@@ -337,17 +356,20 @@ export default function Dashboard() {
         }
     };
 
-    function getRoundTable(): object {
-        return RoundTable(students, studentsSelecteds, roundSelected);
+    function getBarData(): object {
+        return barData(students, studentsSelecteds, roundSelected);
     };
+
+    function getPolarData(): object {
+        return polarData(students, studentsSelecteds, roundSelected);
+    }
 
 
     return (
         <Grid container>
             <Button onClick={
                 () => {
-
-                    console.table(getRoundTable());
+                    polarData(students, studentsSelecteds, roundSelected);
                     // console.log(Object.values(errorsFromRounds));
 
 
@@ -454,6 +476,9 @@ export default function Dashboard() {
                         <Chart
                             type="bar"
                             height="100%"
+                            series={[{
+                                data: Object.values(getBarData())
+                            }]}
                             options={{
                                 chart: {
                                     id: "basic-bar",
@@ -463,18 +488,14 @@ export default function Dashboard() {
                                     title: {
                                         text: 'Rodada'
                                     },
-                                    categories: Object.keys(getRoundTable())
+                                    categories: Object.keys(getBarData())
                                 },
                                 yaxis: {
                                     title: {
                                         text: 'Quantidade de Erros'
                                     }
                                 },
-                                // }}
                             }}
-                            series={[{
-                                data: Object.values(getRoundTable())
-                            }]}
                         />
                     </Card>
                 </Grid>
@@ -498,35 +519,22 @@ export default function Dashboard() {
                             hideFooter
                             rowHeight={50}
                             rowSelection={false}
-                        // onRowSelectionModelChange={(rows: GridRowId[] | number[], a) => {
-                        //     let parseRows: string[] = [];
-                        //     for (let index = 0; index < rows.length; index++) {
-                        //         const r = rows[index];
-                        //         // console.log(typeof r);
-                        //         parseRows = [...parseRows, r.toString()];
-
-                        //     }
-                        //     console.log(a);
-                        //     // console.log(parseRows);
-                        //     setStudentsSelecteds(parseRows);
-                        // }}
-                        // rowSelection={['Daniel']}
-                        // rowSelectionModel={['Daniel']}
-                        // initialState={ }
-                        // onCellClick={v => console.log(v)}
-                        // disableRowSelectionOnClick
-                        // disableColumnSelector
-                        // disableDensitySelector
                         />
                     </div>
                 </Grid>
                 <Grid container item xs={8} style={s} >
                     <Card style={{ width: "100%", height: "100%" }}>
-                        {/* <Chart
+                        <Chart
                             options={{
-                                labels: rows.map(r => `Tabuada de ${r.table}`),
+                                labels: Object.keys(getPolarData()),
                                 chart: {
                                     type: 'polarArea',
+                                    events: {
+                                        click(e, chartContext, config) {
+                                            // Aqui vai pegar e selecionar as tabuadas na Rodada.
+                                            console.log(chartContext.w.globals.labels[config.globals.selectedDataPoints[0][0]]);
+                                        }
+                                    }
                                 },
                                 stroke: {
                                     colors: ['#fff']
@@ -551,12 +559,10 @@ export default function Dashboard() {
                                     }
                                 }]
                             }}
-                            series={rows.map(r => r.sum_errors)}
+                            series={Object.values(getPolarData())}
                             type="polarArea"
-                            // width="100%"
                             height="100%"
-                        // style={{ backgroundColor: '#fafafa' }}
-                        /> */}
+                        />
                     </Card>
                 </Grid>
             </Grid>
