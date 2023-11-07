@@ -1,0 +1,31 @@
+/* $randomNumber: random(5); */
+
+@keyframes cloud {
+  from {
+    background-position-y: -100%;
+  }
+  to {
+    background-position-y: 200%;
+  }
+}
+
+.cloud {
+  position: absolute;
+  z-index: 1;
+  background-image: url(../../../images/nuvem-3.png);
+  background-repeat: no-repeat;
+  background-size: contain;
+  animation: 20s linear infinite cloud;
+}
+
+.canvas {
+  z-index: 6;
+}
+
+.update-tab{
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}

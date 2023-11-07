@@ -1,0 +1,54 @@
+.airplane {
+  background-image: url(../../../images/aviao-2d.png);
+  background-repeat: no-repeat;
+  background-size: contain;
+  z-index: 5;
+  position: absolute;
+}
+
+.shot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: green;
+  z-index: 4;
+}
+
+.balloon {
+  position: absolute;
+  background-image: url(../../../images/maidis-Vertical-Striped-Hot-Air-Balloons-2.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  transition-property: margin;
+  transition-timing-function: linear;
+  justify-content: center;
+  align-items: baseline;
+  display: flex;
+}
+
+.balloon-text {
+  font-size: large;
+  color: darkslategray;
+  background-color: #ffffff80;
+  border-radius: 50%;
+  /* text-align: center; */
+}
+
+@keyframes message {
+  from {
+    visibility: visible;
+  }
+  to {
+    visibility: hidden;
+    font-size: 3px;
+  }
+}
+
+.result-balloon {
+  position: absolute;
+  animation: message 1s normal;
+  visibility: hidden;
+  font-size: small;
+  text-align: center;
+}

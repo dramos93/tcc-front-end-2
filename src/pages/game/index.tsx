@@ -1,5 +1,9 @@
 import React from 'react';
+import { Play } from './play';
+import { GameProvider } from './context/gameContext';
 
 export default function Dashboard() {
-    return <h1>Game</h1>;
+    return <GameProvider>
+        <Play />;
+    </GameProvider>;
 }

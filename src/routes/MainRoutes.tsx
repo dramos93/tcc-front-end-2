@@ -25,7 +25,7 @@ export const pathToRole: Array<PathObject> = [
     },
     {
         key: 'game',
-        roles: [TypeUser.student]
+        roles: [TypeUser.student, TypeUser.admin]
     }
 ];
 

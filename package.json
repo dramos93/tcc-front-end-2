@@ -11,6 +11,7 @@
     "@types/node": "^16.18.37",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
+    "@use-it/interval": "^1.0.0",
     "apexcharts": "^3.43.0",
     "package": "^1.0.1",
     "react": "^18.2.0",
