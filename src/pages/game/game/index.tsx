@@ -1,49 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useInterval from '@use-it/interval';
 import './game.css';
 import { CanvasProps, useGameContext } from '../context/gameContext';
-import { ECanvas, FL, numberOfBalloonIsInMultiplicationTables } from '../utils/constants';
-
-const squades: { x: number, y: number, dimensionDefault: number; } = { x: 10, y: 17, dimensionDefault: 40 };
-const delay = 400;
-const delayShot = delay / 8;
-const delayBalloon = delay * 14;
-let lista: object[] = [];
-
-const criar = () => {
-    let l = [];
-    for (let i = 0; i < 10; i++) {
-        l.push(Math.floor(Math.random() * 4));
-    }
-    return l;
-};
-
-// interface 
-function randomNumberToBaloonAleatory(t: number, multiplicationTablesList: number[]): number {
-    // Aqui um número aleatório da tabuada.
-    const numberAleatoryList = [
-        Math.floor(Math.random() * t * 10) + 1,
-        Math.floor(Math.random() * t * 10) + 1
-    ];
-
-    numberAleatoryList.push(multiplicationTablesList[Math.floor(Math.random() * multiplicationTablesList.length)]);
-
-    const numberAleatory = numberAleatoryList[Math.floor(Math.random() * numberAleatoryList.length)];
-
-    if (multiplicationTablesList === undefined) {
-        console.info('multiplicationTablesList is undefined');
-        return randomNumberToBaloonAleatory(t, multiplicationTablesList);
-    }
-    else if (numberOfBalloonIsInMultiplicationTables(numberAleatory, multiplicationTablesList)) {
-        return numberAleatory;
-    }
-    else if (numberAleatory % t)
-        return numberAleatory;
-    else {
-        // Não é um número da tabela e não é um número divisível(aleatório)
-        return randomNumberToBaloonAleatory(t, multiplicationTablesList);
-    }
-}
+import {
+    ECanvas,
+    FL,
+    squades,
+    delay,
+    delayShot,
+    delayBalloon,
+    criar
+} from '../utils/constants';
 
 const Airplane: React.FC<{ positionAirplane: number; }> = (props: { positionAirplane: number; }) => {
     const { positionAirplane } = props;
@@ -61,29 +28,19 @@ const Airplane: React.FC<{ positionAirplane: number; }> = (props: { positionAirp
 
 const Shot: React.FC<{ index: number, positionAirplane: number; }> = (props: { index: number, positionAirplane: number; }) => {
     const { index, positionAirplane } = props;
-    const { setCanvas, start, map, setMap } = useGameContext();
+    const { setCanvas, start, map, setMap, deadBalloon } = useGameContext();
     const [y, setY] = useState<number>(squades.y - 1); //pode tirar o -1
     const [x] = useState<number>(positionAirplane);
-
-    function deadBalloon(itemMap: any) {
-        const canvasBalloonIndex = itemMap.canvasBalloonIndex;
-        const canvasShotIndex = index;
-        setCanvas((c: CanvasProps[]) => {
-            c[canvasShotIndex].canvas = null;
-            c[canvasBalloonIndex].canvas = null;
-            return [...c];
-        });
-    }
 
     useInterval(() => {
         if (y >= 0) {
             if (!!map[y - 1]) {
                 if (map[y - 1][x].canvas === ECanvas.BALLOON) {
-                    deadBalloon(map[y - 1][x]);
+                    deadBalloon(map[y - 1][x], index);
                 }
             }
             if (map[y][x].canvas === ECanvas.BALLOON) {
-                deadBalloon(map[y][x]);
+                deadBalloon(map[y][x], index);
             }
             if (y === 0) {
                 setCanvas(c => {
@@ -117,10 +74,10 @@ const Shot: React.FC<{ index: number, positionAirplane: number; }> = (props: { i
 
 const Balloon: React.FC<{ marginLeft: number, index: number; }> = (props: { marginLeft: number, index: number; }) => {
     const { marginLeft, index } = props;
-    const { setCanvas, t, start, setLives, map, setMap, multiplicationTablesList, setMultiplicationTablesList, updateTable, setUpdateTable, setBalloonsHit } = useGameContext();
+    const { setCanvas, t, start, setLives, map, setMap, setMultiplication, randomNumberToBaloonAleatory } = useGameContext();
     const [x] = useState(marginLeft);
     const [y, setY] = useState(0);
-    const [valueBalloon] = useState<number>(randomNumberToBaloonAleatory(t, multiplicationTablesList));
+    const [valueBalloon] = useState<number>(randomNumberToBaloonAleatory());
     const [result, setResult] = useState<string>("");
 
     useInterval(() => {
@@ -141,34 +98,7 @@ const Balloon: React.FC<{ marginLeft: number, index: number; }> = (props: { marg
             });
             valueBalloon % t && setLives((x: number) => x - 1);
             setResult(valueBalloon % t ? 'Errou' : 'Acertou');
-            if (numberOfBalloonIsInMultiplicationTables(valueBalloon, multiplicationTablesList)) {
-                let i: number = multiplicationTablesList.indexOf(valueBalloon);
-                const newMultiplicationTablesList = multiplicationTablesList.filter((value: number, index: number) => index !== i);
-                multiplicationTablesList.filter((value: number) => value === valueBalloon).length === 1 && setBalloonsHit(b => [...b, valueBalloon]);
-                if (!updateTable) {
-                    setUpdateTable(true);
-                    lista.push({
-                        'tabuada Atual': t,
-                        'tabuada': multiplicationTablesList.join(" - "),
-                        'valor do balão': valueBalloon,
-                        'hora': Date.now().toFixed()[-4]
-                    });
-                    console.clear();
-                    console.table(lista);
-                    if (multiplicationTablesList.length === 1) {
-                        setCanvas({} as CanvasProps[]);
-                        lista = [];
-                    }
-                    else {
-                        setMultiplicationTablesList(newMultiplicationTablesList);
-                    }
-                }
-            }
-            else {
-                // vidas -= 1
-                // console.log('passou aqui.')
-                // return m
-            }
+            setMultiplication(valueBalloon);
         }
     }, start ? delay : null);
 
@@ -193,20 +123,18 @@ const Balloon: React.FC<{ marginLeft: number, index: number; }> = (props: { marg
 };
 
 function Game() {
-    const { canvas, setCanvas, start, multiplicationTablesList } = useGameContext();
+    const { canvas, setCanvas, start } = useGameContext();
     const [positionAirplane, setPositionAirplane] = useState<number>(5);
 
-    const getKey = (event: any) => {
+    const getKey = useCallback((event: any) => {
         if (event.keyCode === 32) {
             start && setCanvas(c => [...c, { canvas: ECanvas.SHOT } as CanvasProps]);
         } else if (event.keyCode === 37) { //left
             start && setPositionAirplane((x: number) => (x > 0) ? x - 1 : x);
         } else if (event.keyCode === 39) {
             start && setPositionAirplane((x: number) => (x < (squades.x - 1)) ? x + 1 : x);
-        } else if (event.keyCode === 40) {
-            console.log(multiplicationTablesList);
         }
-    };
+    }, [setCanvas, setPositionAirplane, start]);
 
     useEffect(() => {
         window.addEventListener('keydown', getKey);

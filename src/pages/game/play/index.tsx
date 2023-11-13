@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Button, Grid, Paper, Box } from '@mui/material';
 import './play.css';
 import Game from '../game';
-import { CanvasProps, useGameContext } from '../context/gameContext';
-import { ECanvas, screenPlay, squades, updateMultiplicationTables } from '../utils/constants';
+import { useGameContext } from '../context/gameContext';
+import { screenPlay, squades } from '../utils/constants';
 
 
 // No seu arquivo de tipos
@@ -16,62 +16,19 @@ declare global {
 }
 
 export const Play = () => {
-	const [isInitialRender, setIsInitialRender] = useState<boolean>(true);
-	const [clear, setClear] = useState<boolean>(false);
 	const {
-		setCanvas,
 		t,
-		setT,
 		start,
 		setStart,
 		lives,
-		setLives,
 		multiplicationTablesList,
-		setMultiplicationTablesList,
 		balloonsHit,
 		setBalloonsHit,
-		updateTable,
-		setUpdateTable
+		showMessage,
+		setShowMessage
 	} = useGameContext();
 
-
-
-
-	useEffect(() => {
-		if (isInitialRender) {
-			setIsInitialRender(false);
-			return;
-		}
-		console.log(multiplicationTablesList.length);
-		return setUpdateTable(false);
-	}, [updateTable]);
-
-	console.log("Aqui um exemploe de baloonsHit");
-	console.log(balloonsHit);
-
-	useEffect(() => {
-		if (multiplicationTablesList.length === 1) {
-			setStart(false);
-			setCanvas([{ canvas: ECanvas.AIRPLANE } as CanvasProps]);
-			return setClear(true);
-		}
-	}, [multiplicationTablesList.length === 1]);
-
-	useEffect(() => {
-		if (isInitialRender) {
-			setIsInitialRender(false);
-			return;
-		}
-		if (multiplicationTablesList.length === 1) {
-			setLives((v: number) => v += 3);
-			setT((t >= 10) ? 2 : t + 1);
-			setMultiplicationTablesList(updateMultiplicationTables((t >= 10) ? 2 : t + 1));
-			setBalloonsHit([]);
-			console.log({ 'tabuada': t });
-		}
-		return setClear(false);
-	}, [clear && start]);
-
+	// se sair do jogo o jogo para.
 	document.addEventListener("DOMContentLoaded", function () {
 		document.addEventListener("visibilitychange", function () {
 			if (document.visibilityState === 'hidden') {
@@ -81,9 +38,6 @@ export const Play = () => {
 	});
 
 	return (
-		// <GameContext.Provider
-		// 	value={{ canvas, setCanvas, t, setT, start, setStart, lives, setLives, multiplicationTablesList, setMultiplicationTablesList, setBalloonsHit, map, setMap, setUpdateTable, updateTable }}
-		// >
 		<Grid container alignItems='center' justifyContent='center'>
 			<Grid container style={{ width: 600 }}>
 				<Grid
@@ -95,14 +49,14 @@ export const Play = () => {
 					item
 					xs={8}>
 					<div className='canvas'>
-						{clear &&
+						{showMessage &&
 							<div
 								className='update-tab'
 								style={{
 									height: screenPlay.height + squades.dimensionDefault,
 									width: screenPlay.width,
 								}}>
-								Parabéns! Você passou de nível. Agora sua tabuada será: {t < 10 ? t + 1 : 2}
+								Parabéns! Você passou de nível. Agora sua tabuada será: {t}
 							</div>}
 						<Game />
 					</div>
@@ -153,7 +107,11 @@ export const Play = () => {
 						<Button
 							sx={{ width: 140 }}
 							key={1}
-							onClick={() => setStart((s: boolean) => !s)}
+							onClick={() => {
+								console.log(multiplicationTablesList);
+								console.log(balloonsHit);
+								setStart((s: boolean) => !s);
+							}}
 							variant='contained'
 						>
 							Pause
@@ -162,7 +120,11 @@ export const Play = () => {
 						<Button
 							sx={{ width: 140 }}
 							key={2}
-							onClick={() => setStart((s: boolean) => !s)}
+							onClick={() => {
+								setShowMessage(false);
+								setStart((s: boolean) => !s);
+								multiplicationTablesList.length === 20 && setBalloonsHit([]);
+							}}
 							variant='contained'
 						>
 							Start
@@ -171,7 +133,7 @@ export const Play = () => {
 
 				</Grid>
 				<Grid container justifyContent='flex-start' alignContent='center' style={{ height: 50 }} xs={8} item>
-					{[...new Set(Array.from(balloonsHit))].map((item, index) => (
+					{balloonsHit.sort((a, b) => a - b).map((item, index) => (
 						<Box
 							alignItems="center"
 							justifyContent="center"
@@ -191,6 +153,5 @@ export const Play = () => {
 				</Grid>
 			</Grid>
 		</Grid >
-		// </GameContext.Provider>
 	);
 };

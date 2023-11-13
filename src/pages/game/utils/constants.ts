@@ -1,4 +1,15 @@
-export const squades = { x: 10, y: 17, dimensionDefault: 40 };
+export const squades: { x: number, y: number, dimensionDefault: number; } = { x: 10, y: 17, dimensionDefault: 40 };
+export const delay = 100;
+export const delayShot = delay / 8;
+export const delayBalloon = delay * 14;
+
+export const criar = () => {
+    let l = [];
+    for (let i = 0; i < 10; i++) {
+        l.push(Math.floor(Math.random() * 4));
+    }
+    return l;
+};
 
 export const screenPlay = {
 	width: squades.x * squades.dimensionDefault,
@@ -48,9 +59,4 @@ export function updateMultiplicationTables(tab: number): number[] {
 		multiplicationTables.push(Math.ceil(i / 2) * tab);
 	}
 	return multiplicationTables;
-}
-
-export function numberOfBalloonIsInMultiplicationTables(numberOfBalloon: number, multiplicationTablesList: number[]) {
-	// Verifica se o número do balão faz parte tabuada atual.
-	return multiplicationTablesList.indexOf(numberOfBalloon) === -1 ? false : true;
 }
