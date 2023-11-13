@@ -1,15 +1,38 @@
 export const squades: { x: number, y: number, dimensionDefault: number; } = { x: 10, y: 17, dimensionDefault: 40 };
-export const delay = 100;
+export const delay = 400;
 export const delayShot = delay / 8;
-export const delayBalloon = delay * 14;
+export const delayBalloon = delay * 4;
 
 export const criar = () => {
     let l = [];
-    for (let i = 0; i < 10; i++) {
-        l.push(Math.floor(Math.random() * 4));
+    let hasNumber2 = false;
+
+    for (let i = 0; i < squades.x; i++) {
+        const randomNumber = Math.floor(Math.random() * 10);
+        l.push(randomNumber);
+
+        if (randomNumber === 2) {
+            if (hasNumber2) {
+                // Remove outros números 2, mantendo apenas o primeiro
+                const indexToRemove = l.indexOf(2, 0);
+                if (indexToRemove !== -1) {
+                    l.splice(indexToRemove, 1);
+                }
+            } else {
+                hasNumber2 = true;
+            }
+        }
     }
+
+    // Adiciona o número 2 se não estiver presente na lista
+    if (!hasNumber2) {
+        const randomIndex = Math.floor(Math.random() * squades.x);
+        l[randomIndex] = 2;
+    }
+
     return l;
 };
+
 
 export const screenPlay = {
 	width: squades.x * squades.dimensionDefault,
