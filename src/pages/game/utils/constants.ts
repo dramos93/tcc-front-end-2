@@ -1,38 +1,24 @@
 export const squades: { x: number, y: number, dimensionDefault: number; } = { x: 10, y: 17, dimensionDefault: 40 };
-export const delay = 400;
+export const delay = 500;
 export const delayShot = delay / 8;
-export const delayBalloon = delay * 4;
+export const delayBalloon = delay * 3;
 
-export const criar = () => {
-    let l = [];
-    let hasNumber2 = false;
+export function createListWithOnBalloon(busyIndexes: number[]): number[] {
+	let withOnBalloon = [];
+	let aleatoryNumber: number = Math.floor(Math.random() * 10);
 
-    for (let i = 0; i < squades.x; i++) {
-        const randomNumber = Math.floor(Math.random() * 10);
-        l.push(randomNumber);
+	for (let i = 0; i < 10; i++) {
+		withOnBalloon[i] = 0;
+	}
+	// eslint-disable-next-line no-loop-func
+	while (busyIndexes.some(i => i === aleatoryNumber)) {
+		aleatoryNumber = Math.floor(Math.random() * 10);
+	}
 
-        if (randomNumber === 2) {
-            if (hasNumber2) {
-                // Remove outros números 2, mantendo apenas o primeiro
-                const indexToRemove = l.indexOf(2, 0);
-                if (indexToRemove !== -1) {
-                    l.splice(indexToRemove, 1);
-                }
-            } else {
-                hasNumber2 = true;
-            }
-        }
-    }
+	withOnBalloon[aleatoryNumber] = ECanvas.BALLOON;
 
-    // Adiciona o número 2 se não estiver presente na lista
-    if (!hasNumber2) {
-        const randomIndex = Math.floor(Math.random() * squades.x);
-        l[randomIndex] = 2;
-    }
-
-    return l;
-};
-
+	return withOnBalloon;
+}
 
 export const screenPlay = {
 	width: squades.x * squades.dimensionDefault,
@@ -47,14 +33,15 @@ export const ECanvas = {
 	AIRPLANE: 4
 };
 
-interface FloorBlackINterface {
-	canvas: number;
-	valueBalloon: null;
+export interface FloorBlackInterface {
+	canvas: number | null;
+	valueBalloon: number | null;
+	canvasBalloonIndex: number;
 }
 
-export const FL: FloorBlackINterface = { canvas: ECanvas.FLOOR, valueBalloon: null };
+export const FL: FloorBlackInterface = { canvas: ECanvas.FLOOR, valueBalloon: null, canvasBalloonIndex: 0 };
 
-export let initial: FloorBlackINterface[][] = [
+export let initial: FloorBlackInterface[][] = [
 	[FL, FL, FL, FL, FL, FL, FL, FL, FL, FL],
 	[FL, FL, FL, FL, FL, FL, FL, FL, FL, FL],
 	[FL, FL, FL, FL, FL, FL, FL, FL, FL, FL],

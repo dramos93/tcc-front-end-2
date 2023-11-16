@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
-import { ECanvas, initial, updateMultiplicationTables } from '../utils/constants';
+import { ECanvas, FL, FloorBlackInterface, initial, updateMultiplicationTables } from '../utils/constants';
 
 export interface CanvasProps {
     canvas: number | null,
@@ -20,13 +20,17 @@ export interface GameContextType {
     multiplicationTablesList: number[];
     balloonsHit: number[];
     setBalloonsHit: React.Dispatch<React.SetStateAction<number[]>>;
-    map: any; // Defina o tipo apropriado para 'map' se possível
-    setMap: React.Dispatch<React.SetStateAction<any>>;
-    deadBalloon: (itemMap: any, index: number) => void;
+    setMap: React.Dispatch<React.SetStateAction<FloorBlackInterface[][]>>;
+    deadBalloon: (y: number, x: number, index: number) => void;
     randomNumberToBaloonAleatory: () => number;
     setMultiplication: (valueBalloon: number) => void;
     showMessage: boolean;
     setShowMessage: (showMessage: boolean) => void;
+    positionAirplane: number;
+    setPositionAirplane: React.Dispatch<React.SetStateAction<number>>;
+    moveShot: (x: number, y: number, setY: React.Dispatch<React.SetStateAction<number>>, index: number) => void;
+    lineBusy: number[];
+    setLineBusy: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
 const GameContext = createContext<GameContextType>({} as GameContextType);
@@ -44,6 +48,9 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
     const [map, setMap] = useState(initial);
     const [canvas, setCanvas] = useState<CanvasProps[]>([{ canvas: ECanvas.AIRPLANE } as CanvasProps]);
     const [showMessage, setShowMessage] = useState<boolean>(false);
+    const [positionAirplane, setPositionAirplane] = useState<number>(5);
+    const [lineBusy, setLineBusy] = useState<number[]>([]);
+
 
     const numberOfBalloonIsInMultiplicationTables = useCallback((numberOfBalloon: number): boolean => {
         return multiplicationTablesList.indexOf(numberOfBalloon) === -1 ? false : true;
@@ -56,27 +63,23 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
             if (index !== -1) {
                 const newMultiplicationTablesList: number[] = multiplicationTablesList;
                 newMultiplicationTablesList.splice(index, 1);
-                console.log(t, multiplicationTablesList);
                 if (newMultiplicationTablesList.length === 0) {
+                    setCanvas([{ canvas: ECanvas.AIRPLANE, position: positionAirplane } as CanvasProps]);
+                    setMap(initial);
                     setStart(false);
                     setLives((v: number) => v += 3);
                     setT((t >= 10) ? 2 : t + 1);
                     setMultiplicationTablesList(updateMultiplicationTables((t >= 10) ? 2 : t + 1));
                     setShowMessage(true);
                 } else {
-
                     setMultiplicationTablesList(newMultiplicationTablesList);
                 }
-            } else {
-                console.log("Não encontrou o valor do balão.");
             }
         }
     };
 
 
     const randomNumberToBaloonAleatory = useCallback((): number => {
-        // console.log('randomNumberToBaloonAleatory');
-        // Aqui um número aleatório da tabuada.
         const numberAleatoryList: number[] = [
             Math.floor(Math.random() * t * 10) + 1,
             Math.floor(Math.random() * t * 10) + 1
@@ -85,7 +88,6 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
         const numberAleatory: number = numberAleatoryList[Math.floor(Math.random() * numberAleatoryList?.length)];
 
         if (multiplicationTablesList === undefined) {
-            console.info('multiplicationTablesList is undefined');
             return randomNumberToBaloonAleatory();
         }
         else if (numberOfBalloonIsInMultiplicationTables(numberAleatory)) {
@@ -99,15 +101,42 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
         }
     }, [t, multiplicationTablesList, numberOfBalloonIsInMultiplicationTables]);
 
-    function deadBalloon(itemMap: any, index: number) {
-        const canvasBalloonIndex = itemMap.canvasBalloonIndex;
+    const deadBalloon = useCallback((up: number, side: number, index: number) => {
+        const canvasBalloonIndex = map[up][side].canvasBalloonIndex;
         const canvasShotIndex = index;
         setCanvas((c: CanvasProps[]) => {
-            c[canvasShotIndex].canvas = null;
-            c[canvasBalloonIndex].canvas = null;
+            c[canvasShotIndex] && (c[canvasShotIndex].canvas = null);
+            c[canvasBalloonIndex] && (c[canvasBalloonIndex].canvas = null);
             return [...c];
         });
-    }
+    }, [map]);
+
+    const moveShot = useCallback((side: number, up: number, setY: React.Dispatch<React.SetStateAction<number>>, index: number) => {
+        const nextUp: number = up - 1;
+
+        if (up === 1) {
+            setCanvas(c => {
+                c[index].canvas = ECanvas.FLOOR;
+                return c;
+            });
+        }
+        if (!!map[nextUp]) {
+            if (map[nextUp][side].canvas === ECanvas.BALLOON) {
+                deadBalloon(nextUp, side, index);
+            }
+        }
+        if (map[up][side].canvas === ECanvas.BALLOON) {
+            deadBalloon(up, side, index);
+        }
+        setMap((m: FloorBlackInterface[][]) => {
+            m[up][side] = FL;
+            if (up !== 0) {
+                m[nextUp][side] = { 'canvas': ECanvas.SHOT } as FloorBlackInterface;
+            }
+            return m;
+        });
+        setY(nextUp);
+    }, [setCanvas, setMap, map, deadBalloon]);
 
     return (
         <GameContext.Provider
@@ -122,13 +151,17 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
                 multiplicationTablesList,
                 balloonsHit,
                 setBalloonsHit,
-                map,
                 setMap,
                 deadBalloon,
                 randomNumberToBaloonAleatory,
                 setMultiplication,
                 showMessage,
-                setShowMessage
+                setShowMessage,
+                positionAirplane,
+                setPositionAirplane,
+                moveShot,
+                setLineBusy,
+                lineBusy
             }}
         >
             {children}

@@ -107,11 +107,7 @@ export const Play = () => {
 						<Button
 							sx={{ width: 140 }}
 							key={1}
-							onClick={() => {
-								console.log(multiplicationTablesList);
-								console.log(balloonsHit);
-								setStart((s: boolean) => !s);
-							}}
+							onClick={() => setStart((s: boolean) => !s)}
 							variant='contained'
 						>
 							Pause
