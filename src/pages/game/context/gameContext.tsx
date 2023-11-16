@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
 import { ECanvas, FL, FloorBlackInterface, initial, updateMultiplicationTables } from '../utils/constants';
 import { useAuth } from '../../../hooks/useAuth';
+import { PostGame, postGameAPI } from '../../../services/apiGame';
 
 export interface CanvasProps {
     canvas: number | null,
@@ -42,6 +43,7 @@ interface childrenGameContextProps {
     children: React.ReactNode;
 }
 
+
 export const GameProvider = ({ children }: childrenGameContextProps) => {
     const [start, setStart] = useState<boolean>(false);
     const [t, setT] = useState<number>(2);
@@ -55,6 +57,24 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
     const [round, setRound] = useState<number>(1);
     const [errors, setErrors] = useState<number>(0);
     const { user } = useAuth();
+
+    const sendDataToServer = async () => {
+        const postData: PostGame = {
+            user_id: user.id,
+            multiplication_table: t,
+            round: round,
+            sum_of_multiplication_table_errors: errors,
+        };
+
+        try {
+            const response = await postGameAPI(postData);
+            console.log('Dados enviados com sucesso!', response);
+            // Faça algo com a resposta, se necessário
+        } catch (error) {
+            console.error('Erro ao enviar os dados para o servidor:', error);
+            // Trate o erro conforme necessário
+        }
+    };
 
     const numberOfBalloonIsInMultiplicationTables = useCallback((numberOfBalloon: number): boolean => {
         return multiplicationTablesList.indexOf(numberOfBalloon) === -1 ? false : true;
@@ -77,7 +97,8 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
                     setShowMessage(true);
                     setRound(round => (t >= 10) ? round += 1 : round);
                     setErrors(0);
-                    console.table({ user_id: user.id, multiplication_table: t, round: round, sum_of_multiplication_table_errors: errors });
+                    // console.table({ user_id: user.id, multiplication_table: t, round: round, sum_of_multiplication_table_errors: errors });
+                    sendDataToServer();
                 } else {
                     setMultiplicationTablesList(newMultiplicationTablesList);
                 }
