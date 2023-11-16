@@ -25,7 +25,9 @@ export const Play = () => {
 		balloonsHit,
 		setBalloonsHit,
 		showMessage,
-		setShowMessage
+		setShowMessage,
+		errors,
+		round
 	} = useGameContext();
 
 	// se sair do jogo o jogo para.
@@ -87,7 +89,7 @@ export const Play = () => {
 							color: 'secondary.main'
 						}}
 						variant='outlined'>
-						Vidas: {lives}
+						Rodada: {round}
 					</Paper>
 					<Paper
 						sx={{
@@ -102,6 +104,34 @@ export const Play = () => {
 						}}
 						variant='outlined'>
 						Tabuada: {t}
+					</Paper>
+					<Paper
+						sx={{
+							my: 1,
+							width: 140,
+							height: 40,
+							borderColor: 'primary.main',
+							backgroundColor: 'background.default',
+							display: 'flex',
+							alignItems: 'center',
+							color: 'secondary.main'
+						}}
+						variant='outlined'>
+						Vidas: {lives}
+					</Paper>
+					<Paper
+						sx={{
+							my: 1,
+							width: 140,
+							height: 40,
+							borderColor: 'primary.main',
+							backgroundColor: 'background.default',
+							display: 'flex',
+							alignItems: 'center',
+							color: 'secondary.main'
+						}}
+						variant='outlined'>
+						Erros: {errors}
 					</Paper>
 					{start ?
 						<Button

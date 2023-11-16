@@ -44,7 +44,7 @@ const Shot: React.FC<{ index: number; }> = (props: { index: number; }) => {
 
 const Balloon: React.FC<{ marginLeft: number, index: number; }> = (props: { marginLeft: number, index: number; }) => {
     const { marginLeft, index } = props;
-    const { setCanvas, t, start, setLives, setMap, setMultiplication, randomNumberToBaloonAleatory } = useGameContext();
+    const { setCanvas, t, start, setLives, setMap, setMultiplication, randomNumberToBaloonAleatory, setErrors } = useGameContext();
     const [side] = useState(marginLeft + 1);
     const [down, setDown] = useState(0);
     const [valueBalloon] = useState<number>(randomNumberToBaloonAleatory());
@@ -82,9 +82,7 @@ const Balloon: React.FC<{ marginLeft: number, index: number; }> = (props: { marg
                 newMap[prevDown][side] = FL;
                 newMap[down][side] = FL;
                 return newMap;
-            }
-
-            );
+            });
             setCanvas(c => {
                 c[index].canvas = ECanvas.MESSAGE;
                 c[index].result = valueBalloon % t ? 'Errou' : 'Acertou';
@@ -93,6 +91,7 @@ const Balloon: React.FC<{ marginLeft: number, index: number; }> = (props: { marg
                 return [...c];
             });
             valueBalloon % t && setLives((x: number) => x - 1);
+            valueBalloon % t && setErrors(error => error += 1);
             setResult(valueBalloon % t ? 'Errou' : 'Acertou');
             setMultiplication(valueBalloon);
         }

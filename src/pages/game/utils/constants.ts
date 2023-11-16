@@ -1,5 +1,5 @@
 export const squades: { x: number, y: number, dimensionDefault: number; } = { x: 10, y: 17, dimensionDefault: 40 };
-export const delay = 500;
+export const delay = 50;
 export const delayShot = delay / 8;
 export const delayBalloon = delay * 3;
 
@@ -35,11 +35,11 @@ export const ECanvas = {
 
 export interface FloorBlackInterface {
 	canvas: number | null;
-	valueBalloon: number | null;
+	valueBalloon: number;
 	canvasBalloonIndex: number;
 }
 
-export const FL: FloorBlackInterface = { canvas: ECanvas.FLOOR, valueBalloon: null, canvasBalloonIndex: 0 };
+export const FL: FloorBlackInterface = { canvas: ECanvas.FLOOR, valueBalloon: 0, canvasBalloonIndex: 0 };
 
 export let initial: FloorBlackInterface[][] = [
 	[FL, FL, FL, FL, FL, FL, FL, FL, FL, FL],

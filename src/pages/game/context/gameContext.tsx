@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
 import { ECanvas, FL, FloorBlackInterface, initial, updateMultiplicationTables } from '../utils/constants';
+import { useAuth } from '../../../hooks/useAuth';
 
 export interface CanvasProps {
     canvas: number | null,
@@ -29,8 +30,10 @@ export interface GameContextType {
     positionAirplane: number;
     setPositionAirplane: React.Dispatch<React.SetStateAction<number>>;
     moveShot: (x: number, y: number, setY: React.Dispatch<React.SetStateAction<number>>, index: number) => void;
-    lineBusy: number[];
-    setLineBusy: React.Dispatch<React.SetStateAction<number[]>>;
+    round: number;
+    setRound: React.Dispatch<React.SetStateAction<number>>;
+    errors: number;
+    setErrors: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const GameContext = createContext<GameContextType>({} as GameContextType);
@@ -49,8 +52,9 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
     const [canvas, setCanvas] = useState<CanvasProps[]>([{ canvas: ECanvas.AIRPLANE } as CanvasProps]);
     const [showMessage, setShowMessage] = useState<boolean>(false);
     const [positionAirplane, setPositionAirplane] = useState<number>(5);
-    const [lineBusy, setLineBusy] = useState<number[]>([]);
-
+    const [round, setRound] = useState<number>(1);
+    const [errors, setErrors] = useState<number>(0);
+    const { user } = useAuth();
 
     const numberOfBalloonIsInMultiplicationTables = useCallback((numberOfBalloon: number): boolean => {
         return multiplicationTablesList.indexOf(numberOfBalloon) === -1 ? false : true;
@@ -71,6 +75,9 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
                     setT((t >= 10) ? 2 : t + 1);
                     setMultiplicationTablesList(updateMultiplicationTables((t >= 10) ? 2 : t + 1));
                     setShowMessage(true);
+                    setRound(round => (t >= 10) ? round += 1 : round);
+                    setErrors(0);
+                    console.table({ user_id: user.id, multiplication_table: t, round: round, sum_of_multiplication_table_errors: errors });
                 } else {
                     setMultiplicationTablesList(newMultiplicationTablesList);
                 }
@@ -102,14 +109,26 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
     }, [t, multiplicationTablesList, numberOfBalloonIsInMultiplicationTables]);
 
     const deadBalloon = useCallback((up: number, side: number, index: number) => {
+        if (map[up][side].valueBalloon !== 0) {
+            map[up][side].valueBalloon % t && setLives((x: number) => x - 1);
+            map[up][side].valueBalloon % t && setErrors(error => error += 1);
+        }
+
         const canvasBalloonIndex = map[up][side].canvasBalloonIndex;
         const canvasShotIndex = index;
         setCanvas((c: CanvasProps[]) => {
             c[canvasShotIndex] && (c[canvasShotIndex].canvas = null);
-            c[canvasBalloonIndex] && (c[canvasBalloonIndex].canvas = null);
+            if (map[up][side].valueBalloon && c[canvasBalloonIndex]) {
+                c[canvasBalloonIndex].canvas = ECanvas.MESSAGE;
+                c[canvasBalloonIndex].result = 'Errou';
+                c[canvasBalloonIndex].marginTop = up;
+                c[canvasBalloonIndex].marginLeft = side - 1;
+            } else {
+                c[canvasBalloonIndex] && (c[canvasBalloonIndex].canvas = ECanvas.FLOOR);
+            }
             return [...c];
         });
-    }, [map]);
+    }, [map, setLives, setErrors, t]);
 
     const moveShot = useCallback((side: number, up: number, setY: React.Dispatch<React.SetStateAction<number>>, index: number) => {
         const nextUp: number = up - 1;
@@ -160,8 +179,10 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
                 positionAirplane,
                 setPositionAirplane,
                 moveShot,
-                setLineBusy,
-                lineBusy
+                round,
+                setRound,
+                errors,
+                setErrors
             }}
         >
             {children}
