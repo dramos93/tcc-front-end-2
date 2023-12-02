@@ -63,7 +63,7 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
             user_id: user.id,
             multiplication_table: t,
             round: round,
-            sum_of_multiplication_table_errors: errors,
+            errors: errors,
         };
 
         try {
@@ -97,7 +97,7 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
                     setShowMessage(true);
                     setRound(round => (t >= 10) ? round += 1 : round);
                     setErrors(0);
-                    // console.table({ user_id: user.id, multiplication_table: t, round: round, sum_of_multiplication_table_errors: errors });
+                    // console.table({ user_id: user.id, multiplication_table: t, round: round, errors: errors });
                     sendDataToServer();
                 } else {
                     setMultiplicationTablesList(newMultiplicationTablesList);

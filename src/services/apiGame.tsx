@@ -4,7 +4,7 @@ export interface PostGame {
     user_id: number;
     multiplication_table: number;
     round: number;
-    sum_of_multiplication_table_errors: number;
+    errors: number;
 }
 
 export const postGameAPI = async (data: PostGame): Promise<Response> => {

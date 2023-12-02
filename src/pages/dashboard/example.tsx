@@ -17,7 +17,7 @@ export interface Rounds {
 
 export interface ResultsRounds {
     table: number;
-    sum_of_multiplication_table_errors: number;
+    errors: number;
 }
 
 export const virDoBanco: GroupOfStudents[] = [
@@ -31,9 +31,9 @@ export const virDoBanco: GroupOfStudents[] = [
                         round: 1,
                         sum_of_round_errors: 13,
                         resultsRounds: [
-                            { table: 1, sum_of_multiplication_table_errors: 1 },
-                            { table: 2, sum_of_multiplication_table_errors: 7 },
-                            { table: 3, sum_of_multiplication_table_errors: 5 }]
+                            { table: 1, errors: 1 },
+                            { table: 2, errors: 7 },
+                            { table: 3, errors: 5 }]
                     }]
             }, {
                 name: 'Daniel Filho',
@@ -42,9 +42,9 @@ export const virDoBanco: GroupOfStudents[] = [
                         round: 1,
                         sum_of_round_errors: 20,
                         resultsRounds: [
-                            { table: 1, sum_of_multiplication_table_errors: 8 },
-                            { table: 2, sum_of_multiplication_table_errors: 7 },
-                            { table: 3, sum_of_multiplication_table_errors: 5 }]
+                            { table: 1, errors: 8 },
+                            { table: 2, errors: 7 },
+                            { table: 3, errors: 5 }]
                     }]
             }, {
                 name: 'Artur',
@@ -53,9 +53,9 @@ export const virDoBanco: GroupOfStudents[] = [
                         round: 1,
                         sum_of_round_errors: 23,
                         resultsRounds: [
-                            { table: 1, sum_of_multiplication_table_errors: 1 },
-                            { table: 2, sum_of_multiplication_table_errors: 7 },
-                            { table: 3, sum_of_multiplication_table_errors: 15 }]
+                            { table: 1, errors: 1 },
+                            { table: 2, errors: 7 },
+                            { table: 3, errors: 15 }]
                     }]
             },
 
@@ -74,15 +74,15 @@ export const virDoBanco: GroupOfStudents[] = [
                         resultsRounds: [
                             {
                                 table: 1,
-                                sum_of_multiplication_table_errors: 1
+                                errors: 1
                             },
                             {
                                 table: 2,
-                                sum_of_multiplication_table_errors: 4
+                                errors: 4
                             },
                             {
                                 table: 3,
-                                sum_of_multiplication_table_errors: 3
+                                errors: 3
                             }]
                     },
                     {
@@ -91,15 +91,15 @@ export const virDoBanco: GroupOfStudents[] = [
                         resultsRounds: [
                             {
                                 table: 1,
-                                sum_of_multiplication_table_errors: 0
+                                errors: 0
                             },
                             {
                                 table: 2,
-                                sum_of_multiplication_table_errors: 2
+                                errors: 2
                             },
                             {
                                 table: 3,
-                                sum_of_multiplication_table_errors: 3
+                                errors: 3
                             }]
                     }]
             },
@@ -112,15 +112,15 @@ export const virDoBanco: GroupOfStudents[] = [
                         resultsRounds: [
                             {
                                 table: 1,
-                                sum_of_multiplication_table_errors: 1
+                                errors: 1
                             },
                             {
                                 table: 2,
-                                sum_of_multiplication_table_errors: 5
+                                errors: 5
                             },
                             {
                                 table: 3,
-                                sum_of_multiplication_table_errors: 8
+                                errors: 8
                             }]
                     },
                     {
@@ -129,15 +129,15 @@ export const virDoBanco: GroupOfStudents[] = [
                         resultsRounds: [
                             {
                                 table: 1,
-                                sum_of_multiplication_table_errors: 0
+                                errors: 0
                             },
                             {
                                 table: 2,
-                                sum_of_multiplication_table_errors: 4
+                                errors: 4
                             },
                             {
                                 table: 3,
-                                sum_of_multiplication_table_errors: 6
+                                errors: 6
                             }]
                     },
                     {
@@ -146,15 +146,15 @@ export const virDoBanco: GroupOfStudents[] = [
                         resultsRounds: [
                             {
                                 table: 1,
-                                sum_of_multiplication_table_errors: 1
+                                errors: 1
                             },
                             {
                                 table: 2,
-                                sum_of_multiplication_table_errors: 4
+                                errors: 4
                             },
                             {
                                 table: 3,
-                                sum_of_multiplication_table_errors: 6
+                                errors: 6
                             }]
                     }
                 ]

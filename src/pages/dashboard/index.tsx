@@ -66,9 +66,9 @@ function polarData(students: Student[], studentsSelecteds: string[], roundSelect
         const roundKey = `Tabuada ${r.table}`;//Aqui a lógica não está dando certo.
         if (Object.keys(tables).some(rt => rt === roundKey)) {
             if (tables !== undefined)
-                tables[roundKey] += r.sum_of_multiplication_table_errors;
+                tables[roundKey] += r.errors;
         } else
-            tables[roundKey] = r.sum_of_multiplication_table_errors;
+            tables[roundKey] = r.errors;
     });
 
     return tables;
