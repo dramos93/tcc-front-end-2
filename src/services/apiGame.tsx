@@ -8,7 +8,7 @@ export interface PostGame {
 }
 
 export const postGameAPI = async (data: PostGame): Promise<Response> => {
-    const url = 'http://localhost:3000/api'; // Substitua pelo seu endpoint real
+    const url = 'http://127.0.0.1:5000';
 
     try {
         const response = await fetch(url, {

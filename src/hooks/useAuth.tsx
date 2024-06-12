@@ -1,9 +1,17 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalStorage } from "./useLocalStorage";
 
+
+
 export interface UserToken {
-    token?: string;
+    token: string;
+    // user_id: string,
+    // created_on: string,
+    // active: string,
+    // user_name: string,
+    // user_nickname: string,
+    // user_role: string,
 }
 
 interface PropsAuthProvider {
@@ -15,7 +23,7 @@ export enum TypeUser {
     'student' = 2
 }
 
-export interface User {
+export interface UserInterface {
     // Define a estrutura do objeto de usuário
     // com base nos dados que serão armazenados
     // em localStorage
@@ -28,39 +36,71 @@ export interface User {
 }
 
 interface AuthContextType {
-    user: User;
+    user: UserInterface;
     login: (data: UserToken) => void;
     logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+
+const getDataFromUser = (userToken: UserToken): UserInterface => {
+    console.log('get from user: ' + userToken.token);
+    // console.log((userToken.token === '') ? '{}' : 'getData(userToken.token)');
+    // const data = userToken.token ? getData(userToken.token) : {};
+
+    // const [data, setData] = useState({} as UserToken)
+    // console.log(getData(userToken));
+
+    console.log(userToken.token);
+    console.log(`Com o token ${userToken.token} pega os dados do usuário`);
+    return {
+        username: "Daniel",
+        email: "daniel.silvaramos.93@gmail.com",
+        id: 1,
+        name: "Daniel",
+        role: TypeUser.admin,
+    };
+};
+
 export const AuthProvider = ({ children }: PropsAuthProvider) => {
     const [userToken, setUserToken] = useLocalStorage("user_token", "");
-    const getDataFromUser = (userToken: UserToken): User => {
-        console.log(`Com o token ${userToken.token} pega os dados do usuário`);
-        return {
-            username: "Daniel",
-            email: "daniel.silvaramos.93@gmail.com",
-            id: 1,
-            name: "Daniel",
-            role: TypeUser.admin,
-        };
-    };
-    const [user, setUser] = useState(getDataFromUser(userToken));
+    // const [user, setUser] = useState(getDataFromUser(userToken));
+    const [user, setUser] = useState({} as UserInterface);
+    const getData = useCallback(() => {
+        const url = 'http://127.0.0.1:5000/auth';
+        const init = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'token': userToken
+            }
+        } as RequestInit;
+        fetch(url, init).then(res => {
+            if (!res.ok) {
+                throw new Error('Erro na requisição');
+            } else {
+                return res.json();
+            }
+        }).then(data => {
+            setUser(data as UserInterface);
+        }).catch(error => {
+            console.log('Erro:', error);
+            throw error;
+        });
+    }, [setUser, userToken]);
     const navigate = useNavigate();
-
-
     const login = useCallback((data: UserToken) => {
         console.log(data);
         setUserToken(data.token);
-        setUser(getDataFromUser(userToken));
+        getData();
+        // setUser(getDataFromUser(userToken));
         navigate("/", { replace: true });
-    }, [userToken, setUserToken, setUser, navigate]);
+    }, [setUserToken, navigate, getData]);
 
     const logout = useCallback(() => {
         setUserToken("");
-        setUser({} as User);
+        setUser({} as UserInterface);
         navigate("/login", { replace: true });
     }, [setUserToken, setUser, navigate]);
 
@@ -72,6 +112,11 @@ export const AuthProvider = ({ children }: PropsAuthProvider) => {
         }),
         [user, login, logout]
     );
+
+    // useEffect(() => {
+
+    //     setUser(getDataFromUser(userToken));
+    // });
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

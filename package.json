@@ -13,6 +13,7 @@
     "@types/react-dom": "^18.2.6",
     "@use-it/interval": "^1.0.0",
     "apexcharts": "^3.43.0",
+    "axios": "^1.7.2",
     "package": "^1.0.1",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",

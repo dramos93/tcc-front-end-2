@@ -9,7 +9,7 @@ import React from 'react';
 // ==============================|| APP - THEME, ROUTER, LOCAL  ||============================== //
 
 const App = () => {
-  return (
+  return(
     // <ThemeCustomization>
     // <ScrollTop>
     <AuthProvider>
