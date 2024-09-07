@@ -1,3 +1,26 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Disallow:
+
+
+    // "@mui/icons-material": "^5.13.7",
+    // "@mui/material": "^5.13.7",
+    // "@mui/x-data-grid": "^6.16.0",
+    // "@use-it/interval": "^1.0.0",
+    // "package": "^1.0.1",
+    // "package.json": "^0.0.0",
+    "react": "^18.2.0"
+    // "react-apexcharts": "^1.4.1",
+    // "react-dom": "^18.2.0",
+    // "react-router-dom": "^6.14.1",
+    // "react-scripts": "^3.0.1",
+    // "web-vitals": "^2.1.4"
+
+Link de referência: https://victoronsoftware.com/posts/react-hello-world/
+
+npm install --save-dev react-router-dom
+npm install --save-dev @mui/x-data-grid
+npm install --save-dev @mui/icons-material
+npm install --save-dev @mui/material
+npm install @mui/material 
+npm install --save-dev @use-it/interval
