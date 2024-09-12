@@ -20,6 +20,7 @@ const Login = () => {
     }
 
     const handleClick = async () => {
+        console.log("entramos.")
         interface AuthResponse {
             token: string;
             [key: string]: any;
