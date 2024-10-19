@@ -3,16 +3,20 @@
 
 Shell abaixo é necessário para rodar o servidor front end.
 ```sh
-    dramos93@SABRLHLSS8G3:~/tcc-front-end-2$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh | bash
     source ~/.bashrc
-
-    dramos93@SABRLHLSS8G3:~/tcc-front-end-2$ nvm --version
-    dramos93@SABRLHLSS8G3:~/tcc-front-end-2$ nvm install 18
-    nvm use 18
-    dramos93@SABRLHLSS8G3:~/tcc-front-end-2$ node -v
-    dramos93@SABRLHLSS8G3:~/tcc-front-end-2$ rm rf node_modules/
-    dramos93@SABRLHLSS8G3:~/tcc-front-end-2$ sudo rm -rf node_modules
-    dramos93@SABRLHLSS8G3:~/tcc-front-end-2$ git status
-    dramos93@SABRLHLSS8G3:~/tcc-front-end-2$ git restore .
-    dramos93@SABRLHLSS8G3:~/tcc-front-end-2$ npm install
+    $ nvm --version
+    $ nvm install 18
+    $ nvm use 18
+    $ node -v
+    $ rm rf node_modules/
+    $ sudo rm -rf node_modules
+    $ git status
+    $ git restore .
+    $ npm install
 ```
+
+Caso de erro de path, verificar o seguinte ponto:
+![alt text](image.png)
+https://stackoverflow.com/questions/74000168/running-an-express-server-from-wsl-unc-paths-are-not-supported
+
