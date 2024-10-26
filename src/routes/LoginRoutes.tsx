@@ -7,10 +7,14 @@ const LoginRoutes = {
     path: '/',
     element: <LoginLayout />,
     children: [
+        // {
+        //     path: '/login',
+        //     element: <Login />
+        // },
         {
-            path: 'login',
+            path: '/*',
             element: <Login />
-        }
+        },
     ]
 }
 

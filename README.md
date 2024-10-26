@@ -17,6 +17,8 @@ Shell abaixo é necessário para rodar o servidor front end.
 ```
 
 Caso de erro de path, verificar o seguinte ponto:
-![alt text](image.png)
+
+![alt text](image.png)\
 https://stackoverflow.com/questions/74000168/running-an-express-server-from-wsl-unc-paths-are-not-supported
 
+Opção para substituir o ... https://v3.vitejs.dev/guide/

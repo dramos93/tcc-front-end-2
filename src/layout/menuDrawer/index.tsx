@@ -10,28 +10,30 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import MainRoutes from '../../routes/MainRoutes';
-import { pathToRole, PathObject, childrenType } from '../../routes/MainRoutes';
+// import MainRoutes from '../../routes/MainRoutes';
+// import { pathToRole, PathObject, childrenType } from '../../routes/MainRoutes';
 import { useLocation, Link } from 'react-router-dom';
-import { TypeUser, useAuth } from '../../hooks/useAuth';
+// import { TypeUser, useAuth } from '../../hooks/useAuth';
 
 const drawerWidth = 240;
-export const getKeys = (role: TypeUser) => {
-    return pathToRole.filter(item => item.roles.includes(role));
-};
+// export const getKeys = (role: TypeUser) => {
+//     return pathToRole.filter(item => item.roles.includes(role));
+// };
 
-const getItems = (keys: Array<PathObject>): Array<childrenType> | undefined => {
-    return MainRoutes.children?.filter(x => keys?.some(y => {
-        return y.key === x.key && x;
-    }));
-};
+// const getItems = (keys: Array<PathObject>): Array<childrenType> | undefined => {
+//     return MainRoutes.children?.filter(x => keys?.some(y => {
+//         return y.key === x.key && x;
+//     }));
+// };
 
 
 export default function MenuDrawer() {
     const { pathname } = useLocation();
-    const { logout, user } = useAuth();
-    const keys = getKeys(user.role);
-    const items = getItems(keys);
+    // const { 
+    //     // logout, 
+    //     user } = useAuth();
+    // const keys = getKeys(user.role);
+    // const items = getItems(keys);
     return (
         <Drawer
             variant="permanent"
@@ -44,7 +46,7 @@ export default function MenuDrawer() {
             <Toolbar />
             <Box component="nav" sx={{ overflow: 'auto' }}>
                 <List>
-                    {items?.map((item, index) => (
+                    {/* {items?.map((item, index) => (
                         <ListItem
                             key={item.key}
                             disablePadding
@@ -59,13 +61,15 @@ export default function MenuDrawer() {
                                 <ListItemText primary={item.key} />
                             </ListItemButton>
                         </ListItem>
-                    ))}
+                    ))} */}
                 </List>
                 <Divider />
                 <List>
                     {['SAIR'].map((item, index) => (
                         <ListItem key={item} disablePadding>
-                            <ListItemButton onClick={logout}>
+                            <ListItemButton 
+                            // onClick={logout}
+                            >
                                 <ListItemIcon>
                                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                                 </ListItemIcon>

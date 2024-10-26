@@ -1,4 +1,4 @@
-import { useAuth } from "../../hooks/useAuth";
+// import { useAuth } from "../../hooks/useAuth";
 import React from 'react';
 import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
 
@@ -14,12 +14,12 @@ const columns: GridColDef[] = [
 ];
 
 export default function Users() {
-    const { user } = useAuth();
+    // const { user } = useAuth();
 
     return (
         <div style={{ height: 300, width: '100%' }}>
-            <h1>Username: {user!.username}</h1>
-            <h1>Tipo de Usuário: {user!.role}</h1>
+            <h1>Username: user!.username</h1>
+            <h1>Tipo de Usuário: user!.role</h1>
             <DataGrid rows={rows} columns={columns} />
         </div>
     );

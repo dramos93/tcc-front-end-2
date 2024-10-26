@@ -1,6 +1,6 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
 import { ECanvas, FL, FloorBlackInterface, initial, updateMultiplicationTables } from '../utils/constants';
-import { useAuth } from '../../../hooks/useAuth';
+// import { useAuth } from '../../../hooks/useAuth';
 import { PostGame, postGameAPI } from '../../../services/apiGame';
 
 export interface CanvasProps {
@@ -56,11 +56,12 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
     const [positionAirplane, setPositionAirplane] = useState<number>(5);
     const [round, setRound] = useState<number>(1);
     const [errors, setErrors] = useState<number>(0);
-    const { user } = useAuth();
+    // const { user } = useAuth();
 
     const sendDataToServer = async () => {
         const postData: PostGame = {
-            user_id: user.id,
+            // user_id: user.id,
+            user_id: 1,
             multiplication_table: t,
             round: round,
             errors: errors,

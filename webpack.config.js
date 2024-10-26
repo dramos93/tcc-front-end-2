@@ -41,6 +41,7 @@ module.exports = {
     },
     open: true,
     hot: true,
+    historyApiFallback: true
   },
   plugins: [new HtmlWebpackPlugin({ template: './public/index.html' })],
 };
