@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Login from "../pages/login";
+// import axios from 'axios';
 
 interface PrivateRouteProps {
     children: React.ReactElement;
@@ -9,8 +10,53 @@ interface PrivateRouteProps {
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, CheckAuth }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+    const FetchAPI = async () => {
+        const token = "b12b2740-909f-11ee-bb82-00d76d0a5bee";
+        // const url = 'http://127.0.0.1:5000/auth';
+        // const init: RequestInit = {
+        //     method: 'GET',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'token': token
+        //     },
+        //     // body: JSON.stringify(auth)
+        // };
+        // const f = await
+        // fetch(url, init);
+        // fetch("https://jsonplaceholder.typicode.com/todos/1")
+        //     .then(res => {
+        //         // if (!res.ok) {
+        //         //     throw new Error('Erro na requisição');
+        //         // }
+        //         alert(res);
+        //         // return res.json();
+        //         return "asdasd";
+        //         // return {'a': 's'}
+        //     })
+        //     // .then(data => {
+        //     //     setUser(data as UserInterface);
+        //     // })
+        //     .catch(error => {
+        //         alert(error.message);
+        //     });
+
+        await fetch("https://jsonplaceholder.typicode.com/todos/1")
+            .then(res => res.json())
+            .then(data => alert(data))
+            .catch(error => alert(error.message));
+
+        // console.log(f);
+        // await axios.get("https://jsonplaceholder.typicode.com/todos/1").then((res) => {
+        //     console.log(res);
+        // }).catch(error => {
+        //     alert(error.message);
+        // });
+    };
+
     useEffect(() => {
         const verifyAuth = async () => {
+            FetchAPI();
             try {
                 const authResult = await CheckAuth();
                 setIsAuthenticated(authResult);
