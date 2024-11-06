@@ -8,6 +8,7 @@
   "scripts": {
     "start": "webpack serve --mode development --open"
   },
+  "proxy": "https://jsonplaceholder.typicode.com",
   "devDependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",

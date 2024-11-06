@@ -24,11 +24,11 @@ const router = createBrowserRouter([
             <MainLayout />
         </PrivateRoute>,
         children: [
-            {
-                path: "/",
-                element:
-                    <Home />
-            },
+            // {
+            //     path: "/",
+            //     element:
+            //         <Home />
+            // },
             {
                 path: "/home",
                 element:
@@ -39,36 +39,36 @@ const router = createBrowserRouter([
             //     element:
             //         <Home />
             // },
-            {
-                path: "/team",
-                element: (
-                    <h1>TEAM</h1>
-                ),
-            },
-            {
-                path: "/*",
-                element:
-                    <Home />
-                    // <Navigate to="/home" />
-            },
+            // {
+            //     path: "/team",
+            //     element: (
+            //         <h1>TEAM</h1>
+            //     ),
+            // },
+            // {
+            //     path: "/*",
+            //     element:
+            //         <Home />
+            //     // <Navigate to="/home" />
+            // },
         ],
     },
-    // {
-    //     path: "/login",
-    //     element: (
-    //         <Login />
-    //         // <PrivateRoute CheckAuth={CheckAuth}>
-    //         //     <Login/>
-    //         // </PrivateRoute>
+    {
+        path: "/login",
+        element: (
+            <Login />
+            // <PrivateRoute CheckAuth={CheckAuth}>
+            //     <Login/>
+            // </PrivateRoute>
 
-    //     ),
-    //     // children: [
-    //     //     {
-    //     //         path: "/",
-    //     //         element: <Login />
-    //     //     }
-    //     // ]
-    // },
+        ),
+        // children: [
+        //     {
+        //         path: "/",
+        //         element: <Login />
+        //     }
+        // ]
+    },
 ]);
 
 
