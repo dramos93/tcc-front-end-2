@@ -1,77 +1,55 @@
-import { Navigate, useRoutes } from 'react-router-dom';
-import React from 'react';
-// project import
-import LoginRoutes from './LoginRoutes';
+import Home from '../pages/home';
 import Login from "../pages/login";
 import MainLayout from '../layout/MainLayout';
-import LoginLayout from "../layout/LoginLayout";
-import Home from '../pages/home';
-
-
-import { BrowserRouter, RouterProvider, createBrowserRouter, Outlet } from "react-router-dom";
 import PrivateRoute from './PrivateRoute';
-// import MainRoutes from './MainRoutes';
-import CheckAuth from './CheckAuth';
-// ==============================|| ROUTING RENDER ||============================== //
-// MainRoutes
-// LoginRoutes
+import { AuthContext } from '../hooks/useAuth';
+import { Box, CircularProgress } from '@mui/material';
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { useContext } from 'react';
 
 
-const router = createBrowserRouter([
+const privateRoutes = createBrowserRouter([
     {
         path: "/",
-        element: <PrivateRoute CheckAuth={CheckAuth}>
-            <MainLayout />
-        </PrivateRoute>,
-        children: [
-            // {
-            //     path: "/",
-            //     element:
-            //         <Home />
-            // },
-            {
-                path: "/home",
-                element:
-                    <Home />
-            },
-            // {
-            //     path: "/login",
-            //     element:
-            //         <Home />
-            // },
-            // {
-            //     path: "/team",
-            //     element: (
-            //         <h1>TEAM</h1>
-            //     ),
-            // },
-            // {
-            //     path: "/*",
-            //     element:
-            //         <Home />
-            //     // <Navigate to="/home" />
-            // },
-        ],
-    },
-    {
-        path: "/login",
         element: (
-            <Login />
-            // <PrivateRoute CheckAuth={CheckAuth}>
-            //     <Login/>
-            // </PrivateRoute>
-
+            <PrivateRoute >
+                <MainLayout />
+            </PrivateRoute>
         ),
-        // children: [
-        //     {
-        //         path: "/",
-        //         element: <Login />
-        //     }
-        // ]
+        children: [
+            { path: "/", element: <Home /> },
+            { path: "/home", element: <Home /> },
+            { path: "/*", element: <Home /> },
+        ],
     },
 ]);
 
+const publicRoutes = createBrowserRouter([
+    {
+        path: "/*",
+        element: <Login />,
+    },
+]);
+
+const nullRoutes = createBrowserRouter([
+    {
+        path: "/*",
+        element: <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            marginTop: '-3rem',
+            marginLeft: '-3rem'
+        }}>
+            <CircularProgress size="6rem" />
+        </Box>
+    }
+]);
 
 export default function Routes() {
-    return <RouterProvider router={router} />;
+    const { isAuthenticated, token } = useContext(AuthContext);
+
+    let router = token ? privateRoutes : publicRoutes;
+
+    return ((token === null) || (isAuthenticated === null)) ? <RouterProvider router={nullRoutes} /> : <RouterProvider router={router} />;
 }

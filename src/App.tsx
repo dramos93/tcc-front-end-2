@@ -1,7 +1,7 @@
 
 // project import
 import Routes from './routes';
-// import { AuthProvider } from './hooks/useAuth';
+import { AuthProvider } from './hooks/useAuth';
 import React from 'react';
 // import ThemeCustomization from 'themes';
 // import ScrollTop from 'components/ScrollTop';
@@ -11,9 +11,9 @@ const App = () => {
   return (
     // <ThemeCustomization>
     // <ScrollTop>
-    // <AuthProvider>
+    <AuthProvider>
       <Routes />
-    // </AuthProvider>
+    </AuthProvider>
     // </ScrollTop>
     // </ThemeCustomization>
   );
