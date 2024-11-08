@@ -20,10 +20,6 @@ const Login = () => {
     const handleClick = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setDisabledButton(true);
-        // setAthenticated(await CheckAuth());
-        // setToken(() => {
-        //     return `username=${username}&password=${password}`;
-        // });
         const tokenFromAPI = await getTokenAPI(username, password);
         setToken(tokenFromAPI.token);
         setLocalStorage(tokenFromAPI.token);

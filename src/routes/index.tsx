@@ -1,3 +1,4 @@
+import Game from '../pages/game';
 import Home from '../pages/home';
 import Login from "../pages/login";
 import MainLayout from '../layout/MainLayout';
@@ -6,7 +7,8 @@ import { AuthContext } from '../hooks/useAuth';
 import { Box, CircularProgress } from '@mui/material';
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { useContext } from 'react';
-
+import Users from '../pages/users';
+import Dashboard from '../pages/dashboard';
 
 const privateRoutes = createBrowserRouter([
     {
@@ -19,10 +21,14 @@ const privateRoutes = createBrowserRouter([
         children: [
             { path: "/", element: <Home /> },
             { path: "/home", element: <Home /> },
+            { path: "/users", element: <Users /> },
+            { path: "/dashboard", element: <Dashboard /> },
+            { path: "/game", element: <Game /> },
             { path: "/*", element: <Home /> },
         ],
     },
 ]);
+
 
 const publicRoutes = createBrowserRouter([
     {
@@ -30,6 +36,7 @@ const publicRoutes = createBrowserRouter([
         element: <Login />,
     },
 ]);
+
 
 const nullRoutes = createBrowserRouter([
     {

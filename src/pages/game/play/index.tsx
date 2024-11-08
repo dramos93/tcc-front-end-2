@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Grid, Paper, Box } from '@mui/material';
+import { Button, Grid, Paper, Box, CircularProgress, Skeleton } from '@mui/material';
 import './play.css';
 import Game from '../game';
 import { useGameContext } from '../context/gameContext';
@@ -27,7 +27,8 @@ export const Play = () => {
 		showMessage,
 		setShowMessage,
 		errors,
-		round
+		round,
+		load
 	} = useGameContext();
 
 	// se sair do jogo o jogo para.
@@ -60,7 +61,12 @@ export const Play = () => {
 								}}>
 								Parabéns! Você passou de nível. Agora sua tabuada será: {t}
 							</div>}
-						<Game />
+						{load ?
+							<Game /> :
+							<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: screenPlay.height + squades.dimensionDefault, width: screenPlay.width }}>
+								<CircularProgress size="4rem" sx={{ color: 'grey.500' }} />
+							</div>
+						}
 					</div>
 					<div className='cloud' style={{
 						fill: "green",
@@ -77,62 +83,135 @@ export const Play = () => {
 					justifyContent='center'
 					xs={4}
 				>
-					<Paper
-						sx={{
-							my: 1,
-							width: 140,
-							height: 40,
-							borderColor: 'primary.main',
-							backgroundColor: 'background.default',
-							display: 'flex',
-							alignItems: 'center',
-							color: 'secondary.main'
-						}}
-						variant='outlined'>
-						Rodada: {round}
-					</Paper>
-					<Paper
-						sx={{
-							my: 1,
-							width: 140,
-							height: 40,
-							borderColor: 'primary.main',
-							backgroundColor: 'background.default',
-							display: 'flex',
-							alignItems: 'center',
-							color: 'secondary.main'
-						}}
-						variant='outlined'>
-						Tabuada: {t}
-					</Paper>
-					<Paper
-						sx={{
-							my: 1,
-							width: 140,
-							height: 40,
-							borderColor: 'primary.main',
-							backgroundColor: 'background.default',
-							display: 'flex',
-							alignItems: 'center',
-							color: 'secondary.main'
-						}}
-						variant='outlined'>
-						Vidas: {lives}
-					</Paper>
-					<Paper
-						sx={{
-							my: 1,
-							width: 140,
-							height: 40,
-							borderColor: 'primary.main',
-							backgroundColor: 'background.default',
-							display: 'flex',
-							alignItems: 'center',
-							color: 'secondary.main'
-						}}
-						variant='outlined'>
-						Erros: {errors}
-					</Paper>
+					{load ?
+						<Paper
+							sx={{
+								my: 1,
+								width: 140,
+								height: 40,
+								borderColor: 'primary.main',
+								backgroundColor: 'background.default',
+								display: 'flex',
+								alignItems: 'center',
+								color: 'secondary.main'
+							}}
+							variant='outlined'>
+							Rodada: {round}
+						</Paper> :
+						<Skeleton>
+							<Paper
+								sx={{
+									my: 1,
+									width: 140,
+									height: 40,
+									borderColor: 'primary.main',
+									backgroundColor: 'background.default',
+									display: 'flex',
+									alignItems: 'center',
+									color: 'secondary.main'
+								}}
+								variant='outlined'>
+								Rodada: {round}
+							</Paper></Skeleton>}
+					{load ?
+						<Paper
+							sx={{
+								my: 1,
+								width: 140,
+								height: 40,
+								borderColor: 'primary.main',
+								backgroundColor: 'background.default',
+								display: 'flex',
+								alignItems: 'center',
+								color: 'secondary.main'
+							}}
+							variant='outlined'>
+							Tabuada: {t}
+						</Paper> :
+						<Skeleton>
+							<Paper
+								sx={{
+									my: 1,
+									width: 140,
+									height: 40,
+									borderColor: 'primary.main',
+									backgroundColor: 'background.default',
+									display: 'flex',
+									alignItems: 'center',
+									color: 'secondary.main'
+								}}
+								variant='outlined'>
+								Tabuada: {t}
+							</Paper>
+						</Skeleton>
+					}
+					{load ?
+						<Paper
+							sx={{
+								my: 1,
+								width: 140,
+								height: 40,
+								borderColor: 'primary.main',
+								backgroundColor: 'background.default',
+								display: 'flex',
+								alignItems: 'center',
+								color: 'secondary.main'
+							}}
+							variant='outlined'>
+							Vidas: {lives}
+						</Paper> :
+						<Skeleton>
+							<Paper
+								sx={{
+									my: 1,
+									width: 140,
+									height: 40,
+									borderColor: 'primary.main',
+									backgroundColor: 'background.default',
+									display: 'flex',
+									alignItems: 'center',
+									color: 'secondary.main'
+								}}
+								variant='outlined'>
+								Vidas: {lives}
+							</Paper>
+						</Skeleton>
+
+					}
+					{load ?
+						<Paper
+							sx={{
+								my: 1,
+								width: 140,
+								height: 40,
+								borderColor: 'primary.main',
+								backgroundColor: 'background.default',
+								display: 'flex',
+								alignItems: 'center',
+								color: 'secondary.main'
+							}}
+							variant='outlined'>
+							Erros: {errors}
+						</Paper> :
+						<Skeleton>
+							<Paper
+								sx={{
+									my: 1,
+									width: 140,
+									height: 40,
+									borderColor: 'primary.main',
+									backgroundColor: 'background.default',
+									display: 'flex',
+									alignItems: 'center',
+									color: 'secondary.main'
+								}}
+								variant='outlined'>
+								Erros: {errors}
+							</Paper>
+						</Skeleton>
+
+
+					}
 					{start ?
 						<Button
 							sx={{ width: 140 }}
@@ -152,6 +231,7 @@ export const Play = () => {
 								multiplicationTablesList.length === 20 && setBalloonsHit([]);
 							}}
 							variant='contained'
+							disabled={!load}
 						>
 							Start
 						</Button>

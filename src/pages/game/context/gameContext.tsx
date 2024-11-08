@@ -1,7 +1,7 @@
-import React, { createContext, useCallback, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { ECanvas, FL, FloorBlackInterface, initial, updateMultiplicationTables } from '../utils/constants';
-// import { useAuth } from '../../../hooks/useAuth';
-import { PostGame, postGameAPI } from '../../../services/apiGame';
+import { getGameAPI, PostGame, postGameAPI } from '../../../services/api';
+import { AuthContext } from '../../../hooks/useAuth';
 
 export interface CanvasProps {
     canvas: number | null,
@@ -35,6 +35,7 @@ export interface GameContextType {
     setRound: React.Dispatch<React.SetStateAction<number>>;
     errors: number;
     setErrors: React.Dispatch<React.SetStateAction<number>>;
+    load: boolean;
 }
 
 const GameContext = createContext<GameContextType>({} as GameContextType);
@@ -56,19 +57,19 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
     const [positionAirplane, setPositionAirplane] = useState<number>(5);
     const [round, setRound] = useState<number>(1);
     const [errors, setErrors] = useState<number>(0);
-    // const { user } = useAuth();
+    const [load, setLoad] = useState<boolean>(false);
+    const { classUser, userId, token } = useContext(AuthContext);
 
+    const postData: PostGame = {
+        user_id: userId,
+        class_id: classUser,
+        multiplication_table: t,
+        round: round,
+        errors: errors,
+    };
     const sendDataToServer = async () => {
-        const postData: PostGame = {
-            // user_id: user.id,
-            user_id: 1,
-            multiplication_table: t,
-            round: round,
-            errors: errors,
-        };
-
         try {
-            const response = await postGameAPI(postData);
+            const response = await postGameAPI(postData, token);
             console.log('Dados enviados com sucesso!', response);
             // Faça algo com a resposta, se necessário
         } catch (error) {
@@ -76,6 +77,24 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
             // Trate o erro conforme necessário
         }
     };
+
+    const getDataToServer = async () => {
+        try {
+            const lastDataGame = await getGameAPI(token);
+            return lastDataGame;
+        } catch (error) {
+            console.error('Erro ao enviar os dados para o servidor:', error);
+            // Trate o erro conforme necessário
+        }
+    };
+
+    useEffect(() => {
+        const load = async () =>{
+            console.log(await getDataToServer());
+            setLoad(true);
+        }
+        load()
+    }, []);
 
     const numberOfBalloonIsInMultiplicationTables = useCallback((numberOfBalloon: number): boolean => {
         return multiplicationTablesList.indexOf(numberOfBalloon) === -1 ? false : true;
@@ -204,7 +223,8 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
                 round,
                 setRound,
                 errors,
-                setErrors
+                setErrors,
+                load
             }}
         >
             {children}

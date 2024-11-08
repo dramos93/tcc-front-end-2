@@ -42,15 +42,70 @@ export const authTokenAPI = async () => {
 
     if (responseJson.token == token) {
       // throw new Error('Authentication failed');
-      return true;
+      return responseJson;
     }
-    
+
     else {
       LogoutAuth();
-      return false;
+      return {};
     }
   } catch (error) {
     console.error(error instanceof Error ? error.message : 'Unknown error');
-    return false;
+    return {};
+  }
+};
+
+export interface PostGame {
+  user_id: number | null;
+  class_id: number | null;
+  multiplication_table: number;
+  round: number;
+  errors: number;
+}
+
+export const postGameAPI = async (data: PostGame, token: string | null): Promise<Response> => {
+  const url = 'http://localhost:5000/multiplication-game';
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'token': token as string
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      alert('Erro na requisição');
+      throw new Error('Erro na requisição');
+    }
+
+    return response;
+  } catch (error) {
+    console.error('Erro ao realizar a requisição:', error);
+    throw error;
+  }
+};
+
+export const getGameAPI = async (token: string | null): Promise<Response> => {
+  const url = 'http://localhost:5000/multiplication-game';
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'token': token as string
+      }
+    });
+
+    if (!response.ok) {
+      alert('Erro na requisição');
+      throw new Error('Erro na requisição');
+    }
+
+    return response;
+  } catch (error) {
+    console.error('Erro ao realizar a requisição:', error);
+    throw error;
   }
 };
