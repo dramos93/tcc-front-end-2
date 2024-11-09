@@ -87,8 +87,8 @@ export const postGameAPI = async (data: PostGame, token: string | null): Promise
   }
 };
 
-export const getGameAPI = async (token: string | null): Promise<Response> => {
-  const url = 'http://localhost:5000/multiplication-game';
+export const getGameAPI = async (token: string | null, userId: number | null, classId: number | null): Promise<PostGame[]> => {
+  const url = `http://localhost:5000/multiplication-game?user_id=${userId}&class_id=${classId}`;
   try {
     const response = await fetch(url, {
       method: 'GET',
@@ -103,7 +103,7 @@ export const getGameAPI = async (token: string | null): Promise<Response> => {
       throw new Error('Erro na requisição');
     }
 
-    return response;
+    return response.json();
   } catch (error) {
     console.error('Erro ao realizar a requisição:', error);
     throw error;

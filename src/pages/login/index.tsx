@@ -9,7 +9,7 @@ import { setLocalStorage } from "../../routes/CheckAuth";
 
 
 const Login = () => {
-    const { setToken, setAthenticated, isAuthenticated, token } = useContext(AuthContext);
+    const { setToken, token } = useContext(AuthContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);

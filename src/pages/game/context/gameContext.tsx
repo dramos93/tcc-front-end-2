@@ -80,17 +80,23 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
 
     const getDataToServer = async () => {
         try {
-            const lastDataGame = await getGameAPI(token);
+            const dataGame = await getGameAPI(token, userId, classUser);
+            const lastDataGame = dataGame[dataGame.length - 1];
             return lastDataGame;
         } catch (error) {
-            console.error('Erro ao enviar os dados para o servidor:', error);
+            console.error('Erro ao pegar os dados para o servidor:', error);
             // Trate o erro conforme necessário
+            return {} as PostGame;
         }
     };
 
     useEffect(() => {
         const load = async () =>{
-            console.log(await getDataToServer());
+            const lastDataGame : PostGame = await getDataToServer();
+            console.table(lastDataGame);
+            setT(lastDataGame.multiplication_table + 1);
+            setRound(lastDataGame.multiplication_table < 10 ? lastDataGame.round : lastDataGame.round + 1);
+            // setLives(lastDataGame.);
             setLoad(true);
         }
         load()
