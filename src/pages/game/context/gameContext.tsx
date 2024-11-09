@@ -93,8 +93,8 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
     useEffect(() => {
         const load = async () =>{
             const lastDataGame : PostGame = await getDataToServer();
-            console.table(lastDataGame);
-            setT(lastDataGame.multiplication_table + 1);
+            console.table(lastDataGame.multiplication_table);
+            setT(lastDataGame.multiplication_table < 10 ? lastDataGame.multiplication_table + 1 : 2);
             setRound(lastDataGame.multiplication_table < 10 ? lastDataGame.round : lastDataGame.round + 1);
             // setLives(lastDataGame.);
             setLoad(true);

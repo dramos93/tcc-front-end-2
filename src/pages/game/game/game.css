@@ -1,7 +1,9 @@
 .airplane {
-  background-image: url(../../../images/aviao-2d.png);
+  /* background-image: url(  ../../../images/aviao-2d.png); */
+  background-image: url(/src/images/aviao-2d.png);
   background-repeat: no-repeat;
   background-size: contain;
+  /* background-color: aqua; */
   z-index: 5;
   position: absolute;
 }

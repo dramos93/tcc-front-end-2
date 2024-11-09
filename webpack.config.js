@@ -1,12 +1,13 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require( 'path' );
+const HtmlWebpackPlugin = require( 'html-webpack-plugin' );
 
 module.exports = {
   entry: './src/index.tsx',
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: '/',
+    path: path.resolve( __dirname, 'dist' ),
+    // publicPath: '/',
+    assetModuleFilename: 'images/[hash][ext][query]',
   },
   module: {
     rules: [
@@ -25,8 +26,8 @@ module.exports = {
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
-        use: ['file-loader'],
-      },
+        type: 'asset/resource',
+      }
     ],
   },
   resolve: {
@@ -53,5 +54,5 @@ module.exports = {
     //   }
     // ]
   },
-  plugins: [new HtmlWebpackPlugin({ template: './public/index.html' })],
+  plugins: [new HtmlWebpackPlugin( { template: './public/index.html' } )],
 };

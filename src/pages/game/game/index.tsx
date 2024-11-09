@@ -151,7 +151,7 @@ function Game() {
 
     return (
         <div>
-            {canvas.map((element: CanvasProps, index: number) => {
+            {canvas?.map((element: CanvasProps, index: number) => {
                 if (element.canvas === ECanvas.SHOT) {
                     return <Shot key={index} index={index} />;
                 } else if (element.canvas === ECanvas.BALLOON) {
@@ -174,7 +174,7 @@ function Game() {
                         </div>
                     );
                 } else {
-                    return <div key={index}></div>;
+                    return <div key={index}></div>
                 }
             })}
         </div>
