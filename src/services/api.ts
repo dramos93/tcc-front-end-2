@@ -1,3 +1,4 @@
+import { GroupOfStudents } from "../pages/dashboard/example";
 import { getAuth, LogoutAuth } from "../routes/CheckAuth";
 
 export const getTokenAPI = async (user_nickname: string, user_password: string) => {
@@ -104,6 +105,30 @@ export const getGameAPI = async (token: string | null, userId: number | null, cl
     }
 
     return response.json();
+  } catch (error) {
+    console.error('Erro ao realizar a requisição:', error);
+    throw error;
+  }
+};
+
+export const getClassFromTeacher = async (token: string | null, userId: number | null): Promise<GroupOfStudents[]> => {
+  const url = `http://localhost:5000/get_class_from_teacher?user_id=${userId}`;
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'token': token as string
+      }
+    });
+
+    if (!response.ok) {
+      alert('Erro na requisição');
+      throw new Error('Erro na requisição');
+    }
+    const response_json = await response.json()
+    console.log(response_json)
+    return response_json;
   } catch (error) {
     console.error('Erro ao realizar a requisição:', error);
     throw error;

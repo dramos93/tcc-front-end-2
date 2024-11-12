@@ -44,195 +44,254 @@ interface childrenGameContextProps {
     children: React.ReactNode;
 }
 
-
 export const GameProvider = ({ children }: childrenGameContextProps) => {
+    const { classUser, userId, token } = useContext(AuthContext);
+
+    // Estados iniciais
     const [start, setStart] = useState<boolean>(false);
     const [t, setT] = useState<number>(2);
     const [lives, setLives] = useState<number>(10);
-    const [multiplicationTablesList, setMultiplicationTablesList] = useState<number[]>(updateMultiplicationTables(t));
+    const [multiplicationTablesList, setMultiplicationTablesList] = useState<number[]>(() => updateMultiplicationTables(2));
     const [balloonsHit, setBalloonsHit] = useState<number[]>([]);
-    const [map, setMap] = useState(initial);
-    const [canvas, setCanvas] = useState<CanvasProps[]>([{ canvas: ECanvas.AIRPLANE } as CanvasProps]);
+    const [map, setMap] = useState<FloorBlackInterface[][]>(initial);
+    const [canvas, setCanvas] = useState<CanvasProps[]>([{
+        canvas: ECanvas.AIRPLANE,
+        result: null,
+        marginTop: 0,
+        marginLeft: 0,
+        position: 5
+    }]);
     const [showMessage, setShowMessage] = useState<boolean>(false);
     const [positionAirplane, setPositionAirplane] = useState<number>(5);
     const [round, setRound] = useState<number>(1);
     const [errors, setErrors] = useState<number>(0);
     const [load, setLoad] = useState<boolean>(false);
-    const { classUser, userId, token } = useContext(AuthContext);
 
-    const postData: PostGame = {
-        user_id: userId,
-        class_id: classUser,
-        multiplication_table: t,
-        round: round,
-        errors: errors,
-    };
+    // Funções de API
     const sendDataToServer = async () => {
+        const postData: PostGame = {
+            user_id: userId,
+            class_id: classUser,
+            multiplication_table: t,
+            round: round,
+            errors: errors,
+        };
+
         try {
             const response = await postGameAPI(postData, token);
             console.log('Dados enviados com sucesso!', response);
-            // Faça algo com a resposta, se necessário
         } catch (error) {
             console.error('Erro ao enviar os dados para o servidor:', error);
-            // Trate o erro conforme necessário
         }
     };
 
     const getDataToServer = async () => {
         try {
             const dataGame = await getGameAPI(token, userId, classUser);
-            const lastDataGame = dataGame[dataGame.length - 1];
-            return lastDataGame;
+            if (!dataGame || dataGame.length === 0) return null;
+            return dataGame[dataGame.length - 1];
         } catch (error) {
-            console.error('Erro ao pegar os dados para o servidor:', error);
-            // Trate o erro conforme necessário
-            return {} as PostGame;
+            console.error('Erro ao pegar os dados do servidor:', error);
+            return null;
         }
     };
 
+    // Efeitos
     useEffect(() => {
-        const load = async () =>{
-            const lastDataGame : PostGame = await getDataToServer();
-            console.table(lastDataGame.multiplication_table);
-            setT(lastDataGame.multiplication_table < 10 ? lastDataGame.multiplication_table + 1 : 2);
-            setRound(lastDataGame.multiplication_table < 10 ? lastDataGame.round : lastDataGame.round + 1);
-            // setLives(lastDataGame.);
-            setLoad(true);
-        }
-        load()
+        const loadInitialData = async () => {
+            try {
+                const lastDataGame = await getDataToServer();
+                if (lastDataGame) {
+                    const newT = lastDataGame.multiplication_table < 10
+                        ? lastDataGame.multiplication_table + 1
+                        : 2;
+                    setT(newT);
+                    setMultiplicationTablesList(updateMultiplicationTables(newT));
+                    setRound(lastDataGame.multiplication_table < 10
+                        ? lastDataGame.round
+                        : lastDataGame.round + 1);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar dados iniciais:', error);
+            } finally {
+                setLoad(true);
+            }
+        };
+
+        loadInitialData();
     }, []);
 
+    // Funções de lógica do jogo
     const numberOfBalloonIsInMultiplicationTables = useCallback((numberOfBalloon: number): boolean => {
-        return multiplicationTablesList.indexOf(numberOfBalloon) === -1 ? false : true;
+        return multiplicationTablesList.includes(numberOfBalloon);
     }, [multiplicationTablesList]);
 
-    const setMultiplication = (valueBalloon: number): void => {
-        if (numberOfBalloonIsInMultiplicationTables(valueBalloon)) {
-            let index: number = multiplicationTablesList.indexOf(valueBalloon);
-            multiplicationTablesList.filter((value: number) => value === valueBalloon).length === 1 && setBalloonsHit(b => [...b, valueBalloon]);
-            if (index !== -1) {
-                const newMultiplicationTablesList: number[] = multiplicationTablesList;
-                newMultiplicationTablesList.splice(index, 1);
-                if (newMultiplicationTablesList.length === 0) {
-                    setCanvas([{ canvas: ECanvas.AIRPLANE, position: positionAirplane } as CanvasProps]);
-                    setMap(initial);
-                    setStart(false);
-                    setLives((v: number) => v += 3);
-                    setT((t >= 10) ? 2 : t + 1);
-                    setMultiplicationTablesList(updateMultiplicationTables((t >= 10) ? 2 : t + 1));
-                    setShowMessage(true);
-                    setRound(round => (t >= 10) ? round += 1 : round);
-                    setErrors(0);
-                    // console.table({ user_id: user.id, multiplication_table: t, round: round, errors: errors });
-                    sendDataToServer();
-                } else {
-                    setMultiplicationTablesList(newMultiplicationTablesList);
-                }
-            }
-        }
-    };
+    const setMultiplication = useCallback((valueBalloon: number): void => {
+        if (!numberOfBalloonIsInMultiplicationTables(valueBalloon)) return;
 
+        const updateGame = () => {
+            setCanvas([{
+                canvas: ECanvas.AIRPLANE,
+                result: null,
+                marginTop: 0,
+                marginLeft: 0,
+                position: positionAirplane
+            }]);
+            setMap(initial);
+            setStart(false);
+            setLives(v => v + 3);
+            const newT = t >= 10 ? 2 : t + 1;
+            setT(newT);
+            setMultiplicationTablesList(updateMultiplicationTables(newT));
+            setShowMessage(true);
+            setRound(r => t >= 10 ? r + 1 : r);
+            setErrors(0);
+            sendDataToServer();
+        };
+
+        setBalloonsHit(prev => {
+            if (!prev.includes(valueBalloon)) {
+                return [...prev, valueBalloon];
+            }
+            return prev;
+        });
+
+        setMultiplicationTablesList(prev => {
+            const index = prev.indexOf(valueBalloon);
+            if (index === -1) return prev;
+
+            const newList = [...prev];
+            newList.splice(index, 1);
+
+            if (newList.length === 0) {
+                updateGame();
+            }
+
+            return newList;
+        });
+    }, [numberOfBalloonIsInMultiplicationTables, t, positionAirplane, initial]);
 
     const randomNumberToBaloonAleatory = useCallback((): number => {
-        const numberAleatoryList: number[] = [
-            Math.floor(Math.random() * t * 10) + 1,
-            Math.floor(Math.random() * t * 10) + 1
-        ];
-        numberAleatoryList.push(multiplicationTablesList[Math.floor(Math.random() * multiplicationTablesList.length)]);
-        const numberAleatory: number = numberAleatoryList[Math.floor(Math.random() * numberAleatoryList?.length)];
+        if (!multiplicationTablesList || multiplicationTablesList.length === 0) {
+            return Math.floor(Math.random() * t * 10) + 1;
+        }
 
-        if (multiplicationTablesList === undefined) {
-            return randomNumberToBaloonAleatory();
-        }
-        else if (numberOfBalloonIsInMultiplicationTables(numberAleatory)) {
+        const numberAleatoryList = [
+            Math.floor(Math.random() * t * 10) + 1,
+            Math.floor(Math.random() * t * 10) + 1,
+            multiplicationTablesList[Math.floor(Math.random() * multiplicationTablesList.length)]
+        ];
+
+        const numberAleatory = numberAleatoryList[Math.floor(Math.random() * numberAleatoryList.length)];
+
+        if (numberOfBalloonIsInMultiplicationTables(numberAleatory)) {
             return numberAleatory;
         }
-        else if (numberAleatory % t)
+
+        if (numberAleatory % t !== 0) {
             return numberAleatory;
-        else {
-            // Não é um número da tabela e não é um número divisível(aleatório)
-            return randomNumberToBaloonAleatory();
         }
+
+        return randomNumberToBaloonAleatory();
     }, [t, multiplicationTablesList, numberOfBalloonIsInMultiplicationTables]);
 
     const deadBalloon = useCallback((up: number, side: number, index: number) => {
-        if (map[up][side].valueBalloon !== 0) {
-            map[up][side].valueBalloon % t && setLives((x: number) => x - 1);
-            map[up][side].valueBalloon % t && setErrors(error => error += 1);
+        if (!map[up] || !map[up][side]) return;
+
+        const balloonValue = map[up][side].valueBalloon;
+        if (balloonValue !== 0 && balloonValue % t !== 0) {
+            setLives(x => x - 1);
+            setErrors(error => error + 1);
         }
 
         const canvasBalloonIndex = map[up][side].canvasBalloonIndex;
         const canvasShotIndex = index;
-        setCanvas((c: CanvasProps[]) => {
-            c[canvasShotIndex] && (c[canvasShotIndex].canvas = null);
-            if (map[up][side].valueBalloon && c[canvasBalloonIndex]) {
-                c[canvasBalloonIndex].canvas = ECanvas.MESSAGE;
-                c[canvasBalloonIndex].result = 'Errou';
-                c[canvasBalloonIndex].marginTop = up;
-                c[canvasBalloonIndex].marginLeft = side - 1;
-            } else {
-                c[canvasBalloonIndex] && (c[canvasBalloonIndex].canvas = ECanvas.FLOOR);
+
+        setCanvas(prev => {
+            const newCanvas = [...prev];
+
+            if (newCanvas[canvasShotIndex]) {
+                newCanvas[canvasShotIndex].canvas = null;
             }
-            return [...c];
+
+            if (balloonValue && newCanvas[canvasBalloonIndex]) {
+                newCanvas[canvasBalloonIndex] = {
+                    ...newCanvas[canvasBalloonIndex],
+                    canvas: ECanvas.MESSAGE,
+                    result: 'Errou',
+                    marginTop: up,
+                    marginLeft: side - 1
+                };
+            } else if (newCanvas[canvasBalloonIndex]) {
+                newCanvas[canvasBalloonIndex].canvas = ECanvas.FLOOR;
+            }
+
+            return newCanvas;
         });
-    }, [map, setLives, setErrors, t]);
+    }, [map, t]);
 
     const moveShot = useCallback((side: number, up: number, setY: React.Dispatch<React.SetStateAction<number>>, index: number) => {
-        const nextUp: number = up - 1;
+        const nextUp = up - 1;
 
         if (up === 1) {
-            setCanvas(c => {
-                c[index].canvas = ECanvas.FLOOR;
-                return c;
+            setCanvas(prev => {
+                const newCanvas = [...prev];
+                if (newCanvas[index]) {
+                    newCanvas[index].canvas = ECanvas.FLOOR;
+                }
+                return newCanvas;
             });
         }
-        if (!!map[nextUp]) {
-            if (map[nextUp][side].canvas === ECanvas.BALLOON) {
-                deadBalloon(nextUp, side, index);
-            }
+
+        if (map[nextUp] && map[nextUp][side].canvas === ECanvas.BALLOON) {
+            deadBalloon(nextUp, side, index);
         }
+
         if (map[up][side].canvas === ECanvas.BALLOON) {
             deadBalloon(up, side, index);
         }
-        setMap((m: FloorBlackInterface[][]) => {
-            m[up][side] = FL;
-            if (up !== 0) {
-                m[nextUp][side] = { 'canvas': ECanvas.SHOT } as FloorBlackInterface;
+
+        setMap(prev => {
+            const newMap = [...prev];
+            newMap[up][side] = FL;
+            if (up !== 0 && newMap[nextUp]) {
+                newMap[nextUp][side] = { canvas: ECanvas.SHOT } as FloorBlackInterface;
             }
-            return m;
+            return newMap;
         });
+
         setY(nextUp);
-    }, [setCanvas, setMap, map, deadBalloon]);
+    }, [setCanvas, setMap, map, deadBalloon, FL]);
+
+    const value = {
+        canvas,
+        setCanvas,
+        t,
+        start,
+        setStart,
+        lives,
+        setLives,
+        multiplicationTablesList,
+        balloonsHit,
+        setBalloonsHit,
+        setMap,
+        deadBalloon,
+        randomNumberToBaloonAleatory,
+        setMultiplication,
+        showMessage,
+        setShowMessage,
+        positionAirplane,
+        setPositionAirplane,
+        moveShot,
+        round,
+        setRound,
+        errors,
+        setErrors,
+        load
+    };
 
     return (
-        <GameContext.Provider
-            value={{
-                canvas,
-                setCanvas,
-                t,
-                start,
-                setStart,
-                lives,
-                setLives,
-                multiplicationTablesList,
-                balloonsHit,
-                setBalloonsHit,
-                setMap,
-                deadBalloon,
-                randomNumberToBaloonAleatory,
-                setMultiplication,
-                showMessage,
-                setShowMessage,
-                positionAirplane,
-                setPositionAirplane,
-                moveShot,
-                round,
-                setRound,
-                errors,
-                setErrors,
-                load
-            }}
-        >
+        <GameContext.Provider value={value}>
             {children}
         </GameContext.Provider>
     );

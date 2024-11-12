@@ -1,12 +1,8 @@
-export interface GroupOfStudents {
-    className: string;
-    students: Student[];
-}
+import { getClassFromTeacher } from "../../services/api";
 
-export interface Student {
-    name: string;
-    rounds: Rounds[];
-    // Outras propriedades, se houver
+export interface ResultsRounds {
+    table: number;
+    errors: number;
 }
 
 export interface Rounds {
@@ -15,9 +11,15 @@ export interface Rounds {
     resultsRounds: ResultsRounds[];
 }
 
-export interface ResultsRounds {
-    table: number;
-    errors: number;
+export interface Student {
+    name: string;
+    rounds: Rounds[];
+    // Outras propriedades, se houver
+}
+
+export interface GroupOfStudents {
+    className: string;
+    students: Student[];
 }
 
 export const virDoBanco: GroupOfStudents[] = [
@@ -161,3 +163,11 @@ export const virDoBanco: GroupOfStudents[] = [
             }]
     }
 ];
+
+
+export async function getFromDB(token: string | null, userId: number | null): Promise<GroupOfStudents[]> {
+    const result = await getClassFromTeacher(token, userId)
+
+    return result
+    
+}
