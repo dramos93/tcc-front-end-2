@@ -83,13 +83,47 @@ const calculatePolarData = (students: Student[], studentsSelected: string[], rou
         .flatMap(x => x.rounds)
         .filter(r => roundSelected.includes(r.round));
     const tablesResults = filteredRounds.flatMap(r => r.resultsRounds);
+    console.table(tablesResults)
 
-    return tablesResults.reduce((acc: ChartData, result) => {
+    const finalResult = tablesResults.reduce((acc: ChartData, result) => {
         const tableKey = `Tabuada ${result.table}`;
+        console.group()
+        console.log(acc);
+        console.log(result)
+        console.log(tableKey);
+        console.log(acc[tableKey]);
+        console.log((acc[tableKey] || 0) + result.errors);
+        console.groupEnd()
         acc[tableKey] = (acc[tableKey] || 0) + result.errors;
         return acc;
-    }, {});
+    }, {} as ChartData);
+    console.group();
+    console.group()
+    console.log("finalResult")
+    console.log(finalResult)
+    console.groupEnd();
+    console.groupEnd()
+    return finalResult
 };
+
+// const calculatePolarData = (students: Student[], studentsSelected: string[], roundSelected: number[]): ChartData => {
+//     const filteredStudents = students.filter(student => studentsSelected.includes(student.name));
+//     const filteredRounds = filteredStudents
+//         .flatMap(x => x.rounds)
+//         .filter(r => roundSelected.includes(r.round));
+//     const tablesResults = filteredRounds.flatMap(r => r.resultsRounds);
+//     console.log(tablesResults);
+
+//     return tablesResults.reduce((acc: ChartData, result) => {
+//         const tableKey = `Tabuada ${result.table}`;
+//         if (!acc[tableKey]) {
+//             acc[tableKey] = 0; // Inicializa se ainda não existe
+//         }
+//         acc[tableKey] += result.errors;
+//         return acc;
+//     }, {} as ChartData); // Garante que acc é um objeto vazio inicialmente
+// };
+
 
 const calculateAverageErrors = (students: Student[], studentsSelected: string[], roundDistinct: number[]): number => {
     const filteredStudents = students.filter(s => studentsSelected.includes(s.name));
@@ -118,6 +152,7 @@ const Dashboard: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     const { token, userId } = useContext(AuthContext);
+    const polarData: ChartData = calculatePolarData(students, studentsSelected, roundSelected);
 
     // Effects
     useEffect(() => {
@@ -143,6 +178,9 @@ const Dashboard: React.FC = () => {
                     firstClassStudents.map(s => s.name),
                     firstClassRounds
                 ));
+                console.log("Aqui")
+                console.log(polarData)
+
             } catch (error) {
                 console.error('Failed to initialize dashboard:', error);
             } finally {
@@ -317,7 +355,8 @@ const Dashboard: React.FC = () => {
                 <Card sx={{ height: 400 }}>
                     <Chart
                         options={{
-                            labels: Object.keys(calculatePolarData(students, studentsSelected, roundSelected)),
+                            // labels: ['1ª Rodada', '2ª Rodada'],
+                            labels: Object.keys(polarData),
                             chart: {
                                 type: 'polarArea'
                             },
@@ -332,19 +371,20 @@ const Dashboard: React.FC = () => {
                                 text: "Número de Erros por tabuada",
                                 align: "center"
                             },
-                            responsive: [{
-                                breakpoint: 480,
-                                options: {
-                                    chart: {
-                                        width: 200
-                                    },
-                                    legend: {
-                                        position: 'bottom'
-                                    }
-                                }
-                            }]
+                            // responsive: [{
+                            //     breakpoint: 480,
+                            //     options: {
+                            //         chart: {
+                            //             width: 200
+                            //         },
+                            //         legend: {
+                            //             position: 'bottom'
+                            //         }
+                            //     }
+                            // }]
                         }}
-                        series={Object.values(calculatePolarData(students, studentsSelected, roundSelected))}
+                        series={Object.values(polarData)}
+                        // series={[215, 49]}
                         type="polarArea"
                         height="100%"
                     />

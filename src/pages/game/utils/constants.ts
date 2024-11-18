@@ -1,5 +1,5 @@
 export const squades: { x: number, y: number, dimensionDefault: number; } = { x: 10, y: 17, dimensionDefault: 40 };
-export const delay = 60;
+export const delay = 600;
 export const delayShot = delay / 8;
 export const delayBalloon = delay * 3;
 
