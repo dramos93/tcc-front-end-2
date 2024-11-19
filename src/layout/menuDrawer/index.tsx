@@ -14,6 +14,7 @@ import MainRoutes from '../../routes/MainRoutes';
 import { pathToRole, PathObject, childrenType } from '../../routes/MainRoutes';
 import { useLocation, Link } from 'react-router-dom';
 import { AuthContext } from '../../hooks/useAuth';
+import { LogoutAuth } from '../../routes/CheckAuth';
 // import { TypeUser, useAuth } from '../../hooks/useAuth';
 
 enum TypeUser {
@@ -39,7 +40,13 @@ export default function MenuDrawer() {
     //     // logout, 
     //     user } = useAuth();
 
-    const { roleUser } = React.useContext(AuthContext);
+    const { roleUser, setToken } = React.useContext(AuthContext);
+
+    const logout = () => {
+        LogoutAuth()
+        setToken("")
+    }
+
     const keys = getKeys(roleUser);
     const items = getItems(keys);
     return (
@@ -76,7 +83,7 @@ export default function MenuDrawer() {
                     {['SAIR'].map((item, index) => (
                         <ListItem key={item} disablePadding>
                             <ListItemButton 
-                            // onClick={logout}
+                            onClick={logout}
                             >
                                 <ListItemIcon>
                                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}

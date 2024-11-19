@@ -10,6 +10,7 @@ interface AuthContext {
     roleUser: string | null;
     classUser: number | null;
     userId: number | null;
+    userName: string | null
 }
 
 const AuthContext = createContext<AuthContext>({
@@ -19,7 +20,8 @@ const AuthContext = createContext<AuthContext>({
     setAthenticated: (isAuthenticated) => { },
     roleUser: null as string | null,
     classUser: null as number | null,
-    userId: null as number | null
+    userId: null as number | null,
+    userName: null as string | null
 
 });
 
@@ -30,6 +32,7 @@ function AuthProvider({ children }: { children: React.ReactNode; }) {
     const [roleUser, setRoleUser] = useState<string | null>(null);
     const [classUser, setClassUser] = useState<number | null>(null);
     const [userId, setUserId] = useState<number | null>(null);
+    const [userName, setUserName] = useState<string | null>(null);
 
     const getAuthMemo = useMemo(async () => {
         return await getAuth();
@@ -43,6 +46,7 @@ function AuthProvider({ children }: { children: React.ReactNode; }) {
         setRoleUser(check.user_role);
         setClassUser(check.class_id as number);
         setUserId(check.user_id as number);
+        setUserName(check.user_name as string)    
         return check.token;
     }, [loading]);
 
@@ -63,7 +67,7 @@ function AuthProvider({ children }: { children: React.ReactNode; }) {
 
 
     return (
-        <AuthContext.Provider value={{ token, setToken, isAuthenticated, setAthenticated: setIsAuthenticated, roleUser, classUser, userId }}>
+        <AuthContext.Provider value={{ token, setToken, isAuthenticated, setAthenticated: setIsAuthenticated, roleUser, classUser, userId, userName }}>
             {children}
         </AuthContext.Provider>
     );
