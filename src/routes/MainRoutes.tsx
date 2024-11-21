@@ -3,8 +3,6 @@ import Users from '../pages/users';
 import MainLayout from '../layout/MainLayout';
 import Game from '../pages/game';
 import Dashboard from '../pages/dashboard';
-// import { TypeUser, useAuth } from '../hooks/useAuth';
-// import React from 'react';
 import { NonIndexRouteObject } from 'react-router-dom';
 import { AuthContext } from '../hooks/useAuth';
 import React from 'react';

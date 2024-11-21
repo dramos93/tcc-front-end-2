@@ -15,7 +15,6 @@ import { pathToRole, PathObject, childrenType } from '../../routes/MainRoutes';
 import { useLocation, Link } from 'react-router-dom';
 import { AuthContext } from '../../hooks/useAuth';
 import { LogoutAuth } from '../../routes/CheckAuth';
-// import { TypeUser, useAuth } from '../../hooks/useAuth';
 
 enum TypeUser {
     'admin' = 1,
@@ -36,10 +35,6 @@ const getItems = (keys: Array<PathObject>): Array<childrenType> | undefined => {
 
 export default function MenuDrawer() {
     const { pathname } = useLocation();
-    // const { 
-    //     // logout, 
-    //     user } = useAuth();
-
     const { roleUser, setToken } = React.useContext(AuthContext);
 
     const logout = () => {

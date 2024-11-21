@@ -54,9 +54,9 @@ const nullRoutes = createBrowserRouter([
 ]);
 
 export default function Routes() {
-    const { isAuthenticated, token } = useContext(AuthContext);
+    const { isAuthenticated, token, userName } = useContext(AuthContext);
 
     let router = token ? privateRoutes : publicRoutes;
 
-    return ((token === null) || (isAuthenticated === null)) ? <RouterProvider router={nullRoutes} /> : <RouterProvider router={router} />;
+    return ((token === null) || (isAuthenticated === null) || (!userName )) ? <RouterProvider router={nullRoutes} /> : <RouterProvider router={router} />;
 }

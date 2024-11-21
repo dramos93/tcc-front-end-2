@@ -11,8 +11,6 @@ export const getTokenAPI = async (user_nickname: string, user_password: string) 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'mode': 'cors',
-        // 'credentials': 'include'
       },
       body: JSON.stringify(body)
     });
@@ -28,10 +26,6 @@ export const getTokenAPI = async (user_nickname: string, user_password: string) 
 
 export const authTokenAPI = async () => {
   try {
-    // const body = {
-    //   "user_nickname": user_nickname,
-    //   "user_password": user_password
-    // };
     const token = await getAuth();
     const init = {
       method: 'GET',
@@ -42,7 +36,6 @@ export const authTokenAPI = async () => {
     const responseJson = await response.json();
 
     if (responseJson.token == token) {
-      // throw new Error('Authentication failed');
       return responseJson;
     }
 

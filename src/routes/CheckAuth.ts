@@ -1,9 +1,5 @@
 export const getAuth = async () => {
     const token = localStorage.getItem("authToken");
-    // if (!token) {
-    //     return false;
-    // }
-    // return true;
     return token ? token : "";
 };
 

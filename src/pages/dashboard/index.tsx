@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
-    Button,
     Card,
     CardContent,
     Checkbox,
@@ -13,7 +12,7 @@ import {
     SelectChangeEvent,
     Typography
 } from '@mui/material';
-import { DataGrid, GridColDef, GridColumnHeaderParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Chart from "react-apexcharts";
 import { AuthContext } from '../../hooks/useAuth';
 import { Rounds, Student, GroupOfStudents, getFromDB } from './example';
@@ -105,25 +104,6 @@ const calculatePolarData = (students: Student[], studentsSelected: string[], rou
     console.groupEnd()
     return finalResult
 };
-
-// const calculatePolarData = (students: Student[], studentsSelected: string[], roundSelected: number[]): ChartData => {
-//     const filteredStudents = students.filter(student => studentsSelected.includes(student.name));
-//     const filteredRounds = filteredStudents
-//         .flatMap(x => x.rounds)
-//         .filter(r => roundSelected.includes(r.round));
-//     const tablesResults = filteredRounds.flatMap(r => r.resultsRounds);
-//     console.log(tablesResults);
-
-//     return tablesResults.reduce((acc: ChartData, result) => {
-//         const tableKey = `Tabuada ${result.table}`;
-//         if (!acc[tableKey]) {
-//             acc[tableKey] = 0; // Inicializa se ainda não existe
-//         }
-//         acc[tableKey] += result.errors;
-//         return acc;
-//     }, {} as ChartData); // Garante que acc é um objeto vazio inicialmente
-// };
-
 
 const calculateAverageErrors = (students: Student[], studentsSelected: string[], roundDistinct: number[]): number => {
     const filteredStudents = students.filter(s => studentsSelected.includes(s.name));

@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { AuthContext } from '../../hooks/useAuth';
 
 const Home = () => {
+    const {userName} = useContext(AuthContext);
     return (
         <h1>
-            1HOME - 2HOME - 3HOME - 4HOME - 5HOME
+            Seja bem-vindo, {userName}!
         </h1>
     )
 
