@@ -8,8 +8,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import MainRoutes from '../../routes/MainRoutes';
 import { pathToRole, PathObject, childrenType } from '../../routes/MainRoutes';
 import { useLocation, Link } from 'react-router-dom';
@@ -66,9 +65,10 @@ export default function MenuDrawer() {
                                 component={React.forwardRef((props, ref) => <Link {...props} to={item.path} />)
                                 }>
                                 <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                    {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+                                    {item.icon}
                                 </ListItemIcon>
-                                <ListItemText primary={item.key} />
+                                <ListItemText primary={item.title} />
                             </ListItemButton>
                         </ListItem>
                     ))}
@@ -81,7 +81,8 @@ export default function MenuDrawer() {
                             onClick={logout}
                             >
                                 <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                    {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
+                                    <ExitToAppIcon/>
                                 </ListItemIcon>
                                 <ListItemText primary={item} />
                             </ListItemButton>

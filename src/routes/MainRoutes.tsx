@@ -6,7 +6,9 @@ import Dashboard from '../pages/dashboard';
 import { NonIndexRouteObject } from 'react-router-dom';
 import { AuthContext } from '../hooks/useAuth';
 import React from 'react';
-
+import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
+import HomeIcon from '@mui/icons-material/Home';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
 
 enum TypeUser {
     'admin' = 1,
@@ -20,17 +22,17 @@ export const pathToRole: Array<PathObject> = [
         key: 'home',
         roles: [TypeUser.admin, TypeUser.student],
     },
-    {
-        key: 'users',
-        roles: [TypeUser.admin]
-    },
+    // {
+    //     key: 'users',
+    //     roles: [TypeUser.admin]
+    // },
     {
         key: 'dashboards',
         roles: [TypeUser.admin]
     },
     {
         key: 'game',
-        roles: [TypeUser.student, TypeUser.admin]
+        roles: [TypeUser.student]
     }
 ];
 
@@ -41,8 +43,6 @@ export const getRoles = (key: string): Array<string | TypeUser | null> | undefin
 
 
 function PrivateRoutes({ element, roles }: { element: React.ReactElement, roles: Array<string | null | TypeUser> | undefined; }): React.ReactElement {
-    // const { user } = useAuth();
-
     const { roleUser } = React.useContext(AuthContext);
     alert(roles)
     return roles?.includes(roleUser) ? element : <Home />;
@@ -53,13 +53,13 @@ export interface childrenType {
     element: NonIndexRouteObject['element'];
     key?: string;
     title?: string;
+    icon?: React.ReactElement;
 }
 
 interface mainType {
     path: NonIndexRouteObject['path'];
     element: NonIndexRouteObject['element'];
     children?: Array<childrenType>;
-
 }
 
 const MainRoutes: mainType = {
@@ -70,26 +70,28 @@ const MainRoutes: mainType = {
             path: "/home",
             element: <PrivateRoutes element={<Home />} roles={getRoles('home')} />,
             key: 'home',
-            title: 'Home'
+            title: 'Home',
+            icon: <HomeIcon/>
         },
-        {
-            path: "/users",
-            element: <PrivateRoutes element={<Users />} roles={getRoles('users')} />,
-            key: 'users',
-            title: 'Users'
-
-        },
+        // {
+        //     path: "/users",
+        //     element: <PrivateRoutes element={<Users />} roles={getRoles('users')} />,
+        //     key: 'users',
+        //     title: 'Users'
+        // },
         {
             path: "/dashboard",
             element: <PrivateRoutes element={<Dashboard />} roles={getRoles('dashboards')} />,
             key: 'dashboards',
-            title: 'Dashboard'
+            title: 'Dashboard',
+            icon: <AnalyticsIcon/>
         },
         {
             path: "/game",
             element: <PrivateRoutes element={<Game />} roles={getRoles('game')} />,
             key: 'game',
-            title: 'Game'
+            title: 'Game',
+            icon: <VideogameAssetIcon />
         }
         // ,
         // {

@@ -20,8 +20,8 @@ const privateRoutes = createBrowserRouter([
         ),
         children: [
             { path: "/", element: <Home /> },
-            { path: "/home", element: <Home /> },
-            { path: "/users", element: <Users /> },
+            // { path: "/home", element: <Home /> },
+            // { path: "/users", element: <Users /> },
             { path: "/dashboard", element: <Dashboard /> },
             { path: "/game", element: <Game /> },
             { path: "/*", element: <Home /> },
@@ -29,6 +29,10 @@ const privateRoutes = createBrowserRouter([
     },
 ]);
 
+enum TypeUser {
+    'admin' = 1,
+    'student' = 2
+}
 
 const publicRoutes = createBrowserRouter([
     {
@@ -55,8 +59,12 @@ const nullRoutes = createBrowserRouter([
 
 export default function Routes() {
     const { isAuthenticated, token, userName } = useContext(AuthContext);
+    const createRoutes = () => {
+        if ((token === null) || (isAuthenticated === null)) return nullRoutes;
+        if (token && !userName) return nullRoutes;
+        if (token && userName) return privateRoutes;
+        return publicRoutes;
+    };
 
-    let router = token ? privateRoutes : publicRoutes;
-
-    return ((token === null) || (isAuthenticated === null) || (!userName )) ? <RouterProvider router={nullRoutes} /> : <RouterProvider router={router} />;
+    return <RouterProvider router={createRoutes()} />;
 }

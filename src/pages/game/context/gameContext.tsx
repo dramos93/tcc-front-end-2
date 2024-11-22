@@ -218,7 +218,7 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
                 newCanvas[canvasBalloonIndex] = {
                     ...newCanvas[canvasBalloonIndex],
                     canvas: ECanvas.MESSAGE,
-                    result: 'Errou',
+                    result: '',
                     marginTop: up,
                     marginLeft: side - 1
                 };

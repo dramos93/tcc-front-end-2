@@ -33,13 +33,17 @@ export const authTokenAPI = async () => {
     };
 
     const response = await fetch("http://localhost:5000/auth", init);
+    // if (response.status === 401) {
+    //   console.log(response.status);
+    //   LogoutAuth();
+    //   return {};
+    // }
+    console.log(response.status);
     const responseJson = await response.json();
 
     if (responseJson.token == token) {
       return responseJson;
-    }
-
-    else {
+    } else {
       LogoutAuth();
       return {};
     }
@@ -119,8 +123,8 @@ export const getClassFromTeacher = async (token: string | null, userId: number |
       alert('Erro na requisição');
       throw new Error('Erro na requisição');
     }
-    const response_json = await response.json()
-    console.log(response_json)
+    const response_json = await response.json();
+    console.log(response_json);
     return response_json;
   } catch (error) {
     console.error('Erro ao realizar a requisição:', error);
