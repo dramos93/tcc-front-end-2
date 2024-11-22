@@ -9,7 +9,15 @@ import { setLocalStorage } from "../../routes/CheckAuth";
 
 
 const Login = () => {
-    const { setToken, token } = useContext(AuthContext);
+    const {
+        setToken,
+        token,
+        setRoleUser,
+        setClassUser,
+        setUserId,
+        setUserName
+
+    } = useContext(AuthContext);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -23,6 +31,10 @@ const Login = () => {
         const tokenFromAPI = await getTokenAPI(username, password);
         setToken(tokenFromAPI.token);
         setLocalStorage(tokenFromAPI.token);
+        setRoleUser(tokenFromAPI.user_role as string);
+        setClassUser(tokenFromAPI.class_id as number);
+        setUserId(tokenFromAPI.user_id as number);
+        setUserName(tokenFromAPI.user_name as string);
         setDisabledButton(false);
         if (token) navigate(location.pathname);
     };

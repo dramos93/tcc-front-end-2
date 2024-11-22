@@ -1,6 +1,7 @@
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { getAuth } from '../routes/CheckAuth';
 import { authTokenAPI } from '../services/api';
+import { LogoutAuth } from '../routes/CheckAuth';
 
 interface AuthContext {
     token: string | null;
@@ -10,7 +11,12 @@ interface AuthContext {
     roleUser: string | null;
     classUser: number | null;
     userId: number | null;
-    userName: string | null
+    userName: string | null;
+    logout: () => void;
+    setUserId: (userId: number | null) => void
+    setUserName: (userName: string | null) => void
+    setRoleUser: (roleUser: string | null) => void
+    setClassUser: (classUser: number | null) => void
 }
 
 const AuthContext = createContext<AuthContext>({
@@ -21,7 +27,12 @@ const AuthContext = createContext<AuthContext>({
     roleUser: null as string | null,
     classUser: null as number | null,
     userId: null as number | null,
-    userName: null as string | null
+    userName: null as string | null,
+    logout: () => { },
+    setUserId: (userId: number | null) => { },
+    setUserName: (userName: string | null) => { },
+    setRoleUser: (roleUser: string | null) => { },
+    setClassUser: (classUser: number | null) => { },
 
 });
 
@@ -34,6 +45,11 @@ function AuthProvider({ children }: { children: React.ReactNode; }) {
     const [userId, setUserId] = useState<number | null>(null);
     const [userName, setUserName] = useState<string | null>(null);
 
+    const logout = () => {
+        LogoutAuth();
+        setToken("");
+    };
+
     const getAuthMemo = useMemo(async () => {
         return await getAuth();
     }, [loading]);
@@ -43,10 +59,10 @@ function AuthProvider({ children }: { children: React.ReactNode; }) {
         if (!check.token) {
             setToken("");
         }
-        setRoleUser(check.user_role);
+        setRoleUser(check.user_role as string);
         setClassUser(check.class_id as number);
         setUserId(check.user_id as number);
-        setUserName(check.user_name as string)    
+        setUserName(check.user_name as string);
         return check.token;
     }, [loading]);
 
@@ -67,7 +83,21 @@ function AuthProvider({ children }: { children: React.ReactNode; }) {
 
 
     return (
-        <AuthContext.Provider value={{ token, setToken, isAuthenticated, setAthenticated: setIsAuthenticated, roleUser, classUser, userId, userName }}>
+        <AuthContext.Provider value={{
+            setRoleUser,
+            setClassUser,
+            setUserId,
+            setUserName,
+            logout,
+            token,
+            setToken,
+            isAuthenticated,
+            setAthenticated: setIsAuthenticated,
+            roleUser,
+            classUser,
+            userId,
+            userName
+        }}>
             {children}
         </AuthContext.Provider>
     );

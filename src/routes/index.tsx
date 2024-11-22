@@ -7,32 +7,7 @@ import { AuthContext } from '../hooks/useAuth';
 import { Box, CircularProgress } from '@mui/material';
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { useContext } from 'react';
-import Users from '../pages/users';
 import Dashboard from '../pages/dashboard';
-
-const privateRoutes = createBrowserRouter([
-    {
-        path: "/",
-        element: (
-            <PrivateRoute >
-                <MainLayout />
-            </PrivateRoute>
-        ),
-        children: [
-            { path: "/", element: <Home /> },
-            // { path: "/home", element: <Home /> },
-            // { path: "/users", element: <Users /> },
-            { path: "/dashboard", element: <Dashboard /> },
-            { path: "/game", element: <Game /> },
-            { path: "/*", element: <Home /> },
-        ],
-    },
-]);
-
-enum TypeUser {
-    'admin' = 1,
-    'student' = 2
-}
 
 const publicRoutes = createBrowserRouter([
     {
@@ -58,11 +33,46 @@ const nullRoutes = createBrowserRouter([
 ]);
 
 export default function Routes() {
-    const { isAuthenticated, token, userName } = useContext(AuthContext);
+    const { isAuthenticated, token, userName, roleUser } = useContext(AuthContext);
+    const privateTeacherRoutes = createBrowserRouter([
+        {
+            path: "/",
+            element: (
+                <PrivateRoute >
+                    <MainLayout />
+                </PrivateRoute>
+            ),
+            children: [
+                { path: "/", element: <Home /> },
+                { path: "/dashboard", element: <Dashboard /> },
+                { path: "/*", element: <Home /> },
+            ],
+        },
+    ]);
+    const privateStudentRoutes = createBrowserRouter([
+        {
+            path: "/",
+            element: (
+                <PrivateRoute >
+                    <MainLayout />
+                </PrivateRoute>
+            ),
+            children: [
+                { path: "/", element: <Home /> },
+                { path: "/game", element: <Game /> },
+                { path: "/*", element: <Home /> },
+            ],
+        },
+    ]);
+
     const createRoutes = () => {
         if ((token === null) || (isAuthenticated === null)) return nullRoutes;
         if (token && !userName) return nullRoutes;
-        if (token && userName) return privateRoutes;
+        if (token && userName) {
+            if (parseInt(roleUser as string) === 1) return privateTeacherRoutes;
+            else if  (parseInt(roleUser as string) === 2) return privateStudentRoutes;
+            // else return publicRoutes;
+        };
         return publicRoutes;
     };
 
