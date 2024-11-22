@@ -90,9 +90,11 @@ const Balloon: React.FC<{ marginLeft: number, index: number; }> = (props: { marg
                 c[index].marginLeft = marginLeft;
                 return [...c];
             });
-            valueBalloon % t && setLives((x: number) => x - 1);
-            valueBalloon % t && setErrors(error => error += 1);
-            setResult(valueBalloon % t ? 'Errou' : 'Acertou');
+            let condition = ((valueBalloon % t) !== 0) 
+            console.log(condition)
+            condition && setLives((x: number) => x - 1);
+            condition && setErrors(error => error += 1);
+            setResult(condition ? 'Errou' : 'Acertou');
             setMultiplication(valueBalloon);
         }
     }, start ? delay : null);

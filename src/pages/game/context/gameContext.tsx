@@ -199,9 +199,11 @@ export const GameProvider = ({ children }: childrenGameContextProps) => {
         if (!map[up] || !map[up][side]) return;
 
         const balloonValue = map[up][side].valueBalloon;
-        if (balloonValue !== 0 && balloonValue % t !== 0) {
+        if (balloonValue !== 0 && balloonValue % t === 0) {
             setLives(x => x - 1);
             setErrors(error => error + 1);
+        } else{
+            setLives(x => x + 1);
         }
 
         const canvasBalloonIndex = map[up][side].canvasBalloonIndex;
